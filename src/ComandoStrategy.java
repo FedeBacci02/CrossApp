@@ -1,3 +1,5 @@
+import java.net.*;
+
 public interface ComandoStrategy{
-    void esegui(String [] parameters);
+    void esegui(String [] parameters,Socket socket);
 }

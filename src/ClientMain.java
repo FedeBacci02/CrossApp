@@ -28,7 +28,7 @@ public class ClientMain {
                 if (command.toLowerCase().equals("exit"))
                     end = true;
                 else
-                    menu.eseguiComando(command);
+                    menu.eseguiComando(command,socket);
             }
         } catch (IOException e) {
             e.printStackTrace();

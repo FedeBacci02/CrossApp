@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.net.*;
 
 public class MenuContext {
     private ComandoStrategy strategy;
@@ -11,7 +12,7 @@ public class MenuContext {
         strategie.put("register", new Register());
     }
 
-    public void eseguiComando(String c) {
+    public void eseguiComando(String c,Socket socket) {
         System.out.println(c);
         if (c.isEmpty()) {
             System.out.println("command line is empty");
@@ -26,7 +27,7 @@ public class MenuContext {
         this.strategy = strategie.get(subc[0].toLowerCase());
 
         if (strategy != null) {
-            strategy.esegui(subc);
+            strategy.esegui(subc,socket);
         } else {
             System.out.println("Strategy is not setted");
         }

@@ -1,9 +1,11 @@
+import java.net.Socket;
+
 public class Login implements ComandoStrategy {
 
     private String username;
     private String password;
 
-    public void esegui(String [] parameters) {
+    public void esegui(String [] parameters,Socket socket) {
         System.out.println("Login's command is executed  ..");
 
         //esecuzione del comando
@@ -11,8 +13,6 @@ public class Login implements ComandoStrategy {
 
         this.username = parameters[1];
         this.password = parameters[2];
-
-        
 
 
     }
