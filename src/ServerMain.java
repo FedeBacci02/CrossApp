@@ -8,8 +8,7 @@ public class ServerMain {
         //UserRegister users = new UserRegister();
 
         try (ServerSocket listener = new ServerSocket(1234)) {
-            System.out.println("Cross server is running ..");
-            System.out.println("sium");
+            System.out.println("[+] Cross server is running ..");
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
                 pool.execute(new CrossServer(listener.accept()));

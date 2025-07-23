@@ -1,24 +1,27 @@
+public class RegisterResponse {
 
-import java.util.*;
-import com.google.gson.*;
+    private int responde;
+    private String errorMessage;
 
-public class RegisterResponse implements response {
-
-    public static final Map<Integer, String> codici = new HashMap<>();
-
-    static {
-        codici.put(100, "OK");
-        codici.put(101, "invalid password");
-        codici.put(102, "username not available");
-        codici.put(103, "other error cases");
+    public RegisterResponse(int responde, String errorMessage) {
+        this.responde = responde;
+        this.errorMessage = errorMessage;
     }
 
-    @Override
-    public void sendResponse(int number) {
-        // send response for register request
-        responseFormat r = new responseFormat(number, codici.get(number));
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String jsonString = gson.toJson(r);
-        System.out.println("test :" + jsonString);
+    public int getCode() {
+        return responde;
     }
+
+    public void setCode(int responde) {
+        this.responde = responde;
+    }
+
+    public String getMessage() {
+        return errorMessage;
+    }
+
+    public void setMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
 }

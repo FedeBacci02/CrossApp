@@ -13,7 +13,7 @@ public class Register implements ComandoStrategy {
             return;
         }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new Gson();
         User utente = new User(parameters[1], parameters[2]);
         Request r = new Request("register", utente);
         String message = gson.toJson(r);
@@ -24,16 +24,15 @@ public class Register implements ComandoStrategy {
         
         //invio del messaggio
         out.println(message);
+        System.out.println("messaggio inviato");
 
         //attesa ricesione
+        System.out.println("messaggio in attesa");
         String serverResponse = in.readLine();
         System.out.println(serverResponse);
         
         }catch(Exception e){
             e.printStackTrace();
         }
-
-        System.out.println("lol");
-        System.out.println(message);
     }
 }

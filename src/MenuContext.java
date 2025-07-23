@@ -21,9 +21,6 @@ public class MenuContext {
 
         String [] subc = c.split(" ");
 
-        for(String x:subc)
-            System.out.println(x);
-
         this.strategy = strategie.get(subc[0].toLowerCase());
 
         if (strategy != null) {
