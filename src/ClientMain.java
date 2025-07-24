@@ -28,16 +28,24 @@ public class ClientMain {
         // gestione della comunicazione col server
         try (Socket socket = new Socket(args[0], 1234)) {
             while (end != true) {
-                System.out.print("> ");
+                if(menu.getUtenteCorrente() != null)
+                    System.out.print( menu.getUtenteCorrente().getUsername()+"> ");
+                else
+                    System.out.print("> ");
                 String command = in.nextLine();
                 if (command.toLowerCase().equals("exit"))
                     end = true;
+                else if (command.toLowerCase().equals("clean")){
+                    ClearScreen.clearScreen();
+                    System.out.println(Ansi.ansi().fgYellow().a("CROSS: an exChange oRder bOokS Service").reset());
+                }
                 else if (command.toLowerCase().equals("help")){
                     System.out.println("Command list of Cross App:");
                     System.out.println("Register username password -> registra nuovo utente");
                     System.out.println("Login username password -> identifica utente per l' accesso");
                     System.out.println("Logout  -> scollega utente");
                     System.out.println("UpdateCredentials username oldPassword newpassword -> aggiorna credenziali utente");
+                    System.out.println("Clean  -> pulisce la schermata");
                 }
                 else
                     menu.eseguiComando(command,socket);

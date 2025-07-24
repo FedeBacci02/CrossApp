@@ -7,8 +7,11 @@ import com.google.gson.*;
 //import java.io.*;
 
 public class Register implements ComandoStrategy {
+
+    private User utenteCorrente;
+
     public void esegui(String[] parameters, Socket socket) {
-        System.out.println("Register's command is executed  ..");
+        //System.out.println("Register's command is executed  ..");
 
         if (parameters.length < 2) {
             System.out.println("Mancano Username/Password");
@@ -26,18 +29,25 @@ public class Register implements ComandoStrategy {
 
             // invio del messaggio
             out.println(message);
-            System.out.println("messaggio inviato");
+            //System.out.println("messaggio inviato");
 
             // attesa ricesione
-            System.out.println("messaggio in attesa");
+            //System.out.println("messaggio in attesa");
             String jsonResponse = in.readLine();
             
             //output al client
             AutResponse response = AutResponse.desMessage(jsonResponse);
+            if(response.getCode() == 100)
+                utenteCorrente = utente;
+
             System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public User getUserCorrente(){
+        return utenteCorrente;
     }
 }

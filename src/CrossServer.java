@@ -30,7 +30,6 @@ public class CrossServer implements Runnable {
                 String jsonRequest = in.nextLine();
                 Request r = gson.fromJson(jsonRequest, Request.class);
                 System.out.println(Ansi.ansi().fg(Ansi.Color.BLUE).a("[+] " + r.toString()).reset());
-
                 if (r.getOperation().equals("register")) {
                     // estraiamo l'utente
                     String values = gson.toJson(r.getValues());
@@ -42,10 +41,14 @@ public class CrossServer implements Runnable {
                         AutResponse risposta = new AutResponse(101, "invalid password");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
-                    }
-                    if (users.containsKey(newUtente.getUsername())) {
+                    } else if (users.containsKey(newUtente.getUsername())) {
                         // registrazione non completata perchè password è vuota
                         AutResponse risposta = new AutResponse(102, "username is not available");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
+                    } else if (utente != null) {
+                        // registrazione non completata perchè già registrato e loggato
+                        AutResponse risposta = new AutResponse(103, "cother error cases");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else {
@@ -68,30 +71,42 @@ public class CrossServer implements Runnable {
                     if (users.containsKey(newUtente.getUsername())) {
                         if (users.get(newUtente.getUsername()).getPassword().equals(newUtente.getPassword())) {
                             // accesso consentito
+                            System.out.println("a");
                             if (!users.get(newUtente.getUsername()).getStatus().equals("online")) {
-                                utente = newUtente;
-                                utente.setStatus("online");
-                                users.put(utente.getUsername(), utente);
-                                AutResponse risposta = new AutResponse(100, "OK");
-                                String jsonResponse = gson.toJson(risposta);
-                                out.println(jsonResponse);
+                                if (utente != null) {
+                                    AutResponse risposta = new AutResponse(103, "other cases error");
+                                    String jsonResponse = gson.toJson(risposta);
+                                    out.println(jsonResponse);
+                                } else {
+                                    System.out.println("b");
+                                    utente = newUtente;
+                                    utente.setStatus("online");
+                                    users.put(utente.getUsername(), utente);
+                                    AutResponse risposta = new AutResponse(100, "OK");
+                                    String jsonResponse = gson.toJson(risposta);
+                                    out.println(jsonResponse);
+                                }
                             } else {
-                                AutResponse risposta = new AutResponse(102, "user already logged");
+                                System.out.println("e");
+                                AutResponse risposta = new AutResponse(103, "fother error cases");
                                 String jsonResponse = gson.toJson(risposta);
                                 out.println(jsonResponse);
                             }
                         } else {
-                            AutResponse risposta = new AutResponse(101,
+                            System.out.println("e");
+                            AutResponse risposta = new AutResponse(102,
                                     "Username/password mismatch or non existent username");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
                         }
                     } else {
-                        AutResponse risposta = new AutResponse(103,
-                                "other error cases");
+                        System.out.println("f");
+                        AutResponse risposta = new AutResponse(101,
+                                "Username/password mismatch or non existent username");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     }
+                    System.out.println("z");
                 }
 
                 if (r.getOperation().equals("logout")) {
