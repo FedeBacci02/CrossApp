@@ -1,19 +1,21 @@
+import com.google.gson.*;;
+
 public class AutResponse {
 
-    private int responde;
+    private int response;
     private String errorMessage;
 
-    public AutResponse(int responde, String errorMessage) {
-        this.responde = responde;
+    public AutResponse(int response, String errorMessage) {
+        this.response = response;
         this.errorMessage = errorMessage;
     }
 
     public int getCode() {
-        return responde;
+        return response;
     }
 
-    public void setCode(int responde) {
-        this.responde = responde;
+    public void setCode(int response) {
+        this.response = response;
     }
 
     public String getMessage() {
@@ -24,4 +26,15 @@ public class AutResponse {
         this.errorMessage = errorMessage;
     }
 
+    public static AutResponse desMessage(String jsonMessage){
+        Gson gson = new Gson();
+        AutResponse message = gson.fromJson(jsonMessage, AutResponse.class);
+        return message;
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(response).append(" - ").append(errorMessage);
+        return sb.toString();
+    }
 }

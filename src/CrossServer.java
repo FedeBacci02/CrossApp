@@ -156,6 +156,7 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
             }
 

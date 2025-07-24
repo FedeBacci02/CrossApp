@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 
+import org.fusesource.jansi.Ansi;
+
 import com.google.gson.*;
 //import java.io.*;
 
@@ -28,8 +30,11 @@ public class Register implements ComandoStrategy {
 
             // attesa ricesione
             System.out.println("messaggio in attesa");
-            String serverResponse = in.readLine();
-            System.out.println(serverResponse);
+            String jsonResponse = in.readLine();
+            
+            //output al client
+            AutResponse response = AutResponse.desMessage(jsonResponse);
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
 
         } catch (Exception e) {
             e.printStackTrace();

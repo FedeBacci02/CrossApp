@@ -1,8 +1,8 @@
-import java.net.Socket;
-import java.io.*;
 import java.net.*;
 
-import com.google.gson.*;
+import org.fusesource.jansi.Ansi;
+
+import java.io.*;
 
 import com.google.gson.Gson;
 
@@ -33,9 +33,13 @@ public class Login implements ComandoStrategy {
 
             // attesa ricesione
             System.out.println("messaggio in attesa");
-            String serverResponse = in.readLine();
-            System.out.println(serverResponse);
+            String jsonResponse = in.readLine();
 
+            //output al client
+            AutResponse response = AutResponse.desMessage(jsonResponse);
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
+
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

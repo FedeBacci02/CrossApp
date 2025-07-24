@@ -37,7 +37,7 @@ public class ClientMain {
                     System.out.println("Register [username,password] -> registra nuovo utente");
                     System.out.println("Login [username,password] -> identifica utente per l' accesso");
                     System.out.println("Logout [username,password] -> scollega utente");
-                    //ecc...
+                    System.out.println(" [username,password] -> scollega utente");
                 }
                 else
                     menu.eseguiComando(command,socket);
@@ -45,7 +45,6 @@ public class ClientMain {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            ClearScreen.clearScreen();
             in.close();
         }
     }
