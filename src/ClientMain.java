@@ -34,10 +34,10 @@ public class ClientMain {
                     end = true;
                 else if (command.toLowerCase().equals("help")){
                     System.out.println("Command list of Cross App:");
-                    System.out.println("Register [username,password] -> registra nuovo utente");
-                    System.out.println("Login [username,password] -> identifica utente per l' accesso");
-                    System.out.println("Logout [username,password] -> scollega utente");
-                    System.out.println(" [username,password] -> scollega utente");
+                    System.out.println("Register username password -> registra nuovo utente");
+                    System.out.println("Login username password -> identifica utente per l' accesso");
+                    System.out.println("Logout  -> scollega utente");
+                    System.out.println("UpdateCredentials username oldPassword newpassword -> aggiorna credenziali utente");
                 }
                 else
                     menu.eseguiComando(command,socket);
