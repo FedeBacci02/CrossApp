@@ -1,9 +1,9 @@
-public class LoginResponse {
+public class AutResponse {
 
     private int responde;
     private String errorMessage;
 
-    public LoginResponse(int responde, String errorMessage) {
+    public AutResponse(int responde, String errorMessage) {
         this.responde = responde;
         this.errorMessage = errorMessage;
     }

@@ -29,7 +29,7 @@ public class CrossServer implements Runnable {
             while (in.hasNextLine()) {
                 String jsonRequest = in.nextLine();
                 Request r = gson.fromJson(jsonRequest, Request.class);
-                System.out.println("[+] " + r.toString());
+                System.out.println(Ansi.ansi().fg(Ansi.Color.BLUE).a("[+] " + r.toString()).reset());
 
                 if (r.getOperation().equals("register")) {
                     // estraiamo l'utente
@@ -39,23 +39,23 @@ public class CrossServer implements Runnable {
 
                     if (newUtente.getPassword().isEmpty()) {
                         // registrazione non completata perchè password è vuota
-                        RegisterResponse risposta = new RegisterResponse(101, "invalid password");
+                        AutResponse risposta = new AutResponse(101, "invalid password");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     }
                     if (users.containsKey(newUtente.getUsername())) {
                         // registrazione non completata perchè password è vuota
-                        RegisterResponse risposta = new RegisterResponse(102, "username is not available");
+                        AutResponse risposta = new AutResponse(102, "username is not available");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else {
                         // registrazione completata
                         utente = newUtente;
                         utente.setStatus("online");
-                        RegisterResponse risposta = new RegisterResponse(100, "OK");
+                        AutResponse risposta = new AutResponse(100, "OK");
                         String jsonResponse = gson.toJson(risposta);
                         users.put(utente.getUsername(), utente); // la chiave è l'username poichè è univoca
-                        System.out.println("[+] " + utente.getUsername() + " si è registrato con successo!");
+                        System.out.println("[+] " + utente.getUsername() + " registration is successful !");
                         out.println(jsonResponse);
                     }
                 }
@@ -63,7 +63,7 @@ public class CrossServer implements Runnable {
                 if (r.getOperation().equals("login")) {
                     String values = gson.toJson(r.getValues());
                     User newUtente = gson.fromJson(values, User.class);
-                    System.out.println("[+] " + newUtente.getUsername() + " tenta l'accesso al server");
+                    System.out.println("[+] " + newUtente.getUsername() + " is trying to log in the server");
 
                     if (users.containsKey(newUtente.getUsername())) {
                         if (users.get(newUtente.getUsername()).getPassword().equals(newUtente.getPassword())) {
@@ -72,49 +72,108 @@ public class CrossServer implements Runnable {
                                 utente = newUtente;
                                 utente.setStatus("online");
                                 users.put(utente.getUsername(), utente);
-                                LoginResponse risposta = new LoginResponse(100, "OK");
+                                AutResponse risposta = new AutResponse(100, "OK");
                                 String jsonResponse = gson.toJson(risposta);
                                 out.println(jsonResponse);
                             } else {
-                                LoginResponse risposta = new LoginResponse(102, "user already logged");
+                                AutResponse risposta = new AutResponse(102, "user already logged");
                                 String jsonResponse = gson.toJson(risposta);
                                 out.println(jsonResponse);
                             }
                         } else {
-                            LoginResponse risposta = new LoginResponse(101,
+                            AutResponse risposta = new AutResponse(101,
                                     "Username/password mismatch or non existent username");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
                         }
-                    }else{
-                        LoginResponse risposta = new LoginResponse(103,
-                                    "other error cases");
-                            String jsonResponse = gson.toJson(risposta);
-                            out.println(jsonResponse);
+                    } else {
+                        AutResponse risposta = new AutResponse(103,
+                                "other error cases");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
                     }
                 }
 
                 if (r.getOperation().equals("logout")) {
                     if (utente == null) {
-                        LoginResponse risposta = new LoginResponse(101,
+                        AutResponse risposta = new AutResponse(101,
                                 " user not logged in or other error  cases");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else {
                         utente.setStatus("offline");
-                        users.put(utente.getUsername(),utente);
+                        users.put(utente.getUsername(), utente);
                         utente = null;
-                        LoginResponse risposta = new LoginResponse(100,
+                        AutResponse risposta = new AutResponse(100,
                                 "OK");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     }
                 }
+
+                if (r.getOperation().equals("updateCredentials")) {
+                    String values = gson.toJson(r.getValues());
+                    NewUser newUtente = gson.fromJson(values, NewUser.class);
+                    System.out.println("[+] " + newUtente.getUsername() + " is trying to log in the server");
+
+                    if (users.containsKey(newUtente.getUsername())) {
+                        if (!(utente == null)) {
+                            AutResponse risposta = new AutResponse(104,
+                                    "user currently logged");
+                            String jsonResponse = gson.toJson(risposta);
+                            out.println(jsonResponse);
+                        } else if (users.get(newUtente.getUsername()).getPassword() == newUtente.getOldPassword()) {
+                            if (!(newUtente.oldPassword == newUtente.getPassword())) {
+                                // CASO IN CUI SIA TUTTO GIUSTO
+
+                                // aggiornamento dell register degl'utenti registrati
+                                users.put(newUtente.getUsername(),
+                                        new User(newUtente.getUsername(), newUtente.getPassword(), "online"));
+
+                                // invio risposta al client
+                                AutResponse risposta = new AutResponse(100,
+                                        "OK");
+                                String jsonResponse = gson.toJson(risposta);
+                                out.println(jsonResponse);
+                            } else {
+                                AutResponse risposta = new AutResponse(100,
+                                        "new password equal to old one");
+                                String jsonResponse = gson.toJson(risposta);
+                                out.println(jsonResponse);
+                            }
+                        } else {
+                            // invio messaggio di errore al client
+                            AutResponse risposta = new AutResponse(102,
+                                    "username/old password mismatch or non existent username");
+                            String jsonResponse = gson.toJson(risposta);
+                            out.println(jsonResponse);
+                        }
+                    } else {
+                        AutResponse risposta = new AutResponse(102,
+                                "username/old password mismatch or non existent username");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
+                    }
+                }
+
                 System.out.println(users.toString());
             }
 
+            // set status offline
+            if (utente != null) {
+                utente.setStatus("offline");
+                users.put(utente.getUsername(), utente);
+            }
+
+            // output per comunicazione della disconnessione volontaria del client
+            System.out.println(
+                    Ansi.ansi().fg(Ansi.Color.GREEN)
+                            .a("[+] Socket: " + socket.getInetAddress() + " ha interrotto la connessione!!").reset());
         } catch (Exception e) {
-            System.out.println(Ansi.ansi().fg(Ansi.Color.RED).a("[+] Socket: " + socket.getInetAddress() + " è stato chiuso!!"));
+            // output per comunicazione della disconnessione involontaria del client
+            System.out.println(
+                    Ansi.ansi().fg(Ansi.Color.RED).a("[+] Socket: " + socket.getInetAddress() + " è stato chiuso!!")
+                            .reset());
             e.printStackTrace();
         }
     }

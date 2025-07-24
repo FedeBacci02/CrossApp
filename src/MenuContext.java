@@ -11,6 +11,7 @@ public class MenuContext {
         strategie.put("login", new Login());
         strategie.put("register", new Register());
         strategie.put("logout",new Logout());
+        strategie.put("updatecredentials", new updateCredentials());
     }
 
     public void eseguiComando(String c,Socket socket) {
