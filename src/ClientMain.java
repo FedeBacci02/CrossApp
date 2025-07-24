@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import org.fusesource.jansi.Ansi;
 
 public class ClientMain {
     public static void main(String[] args) {
@@ -20,19 +21,31 @@ public class ClientMain {
         // System.out.println(ip);
         boolean end = false;
 
+        //titolo della scermata principale
+        ClearScreen.clearScreen();
+        System.out.println(Ansi.ansi().fgYellow().a("CROSS: an exChange oRder bOokS Service").reset());
+
         // gestione della comunicazione col server
         try (Socket socket = new Socket(args[0], 1234)) {
             while (end != true) {
-                System.out.println("> ");
+                System.out.print("> ");
                 String command = in.nextLine();
                 if (command.toLowerCase().equals("exit"))
                     end = true;
+                else if (command.toLowerCase().equals("help")){
+                    System.out.println("Command list of Cross App:");
+                    System.out.println("Register [username,password] -> registra nuovo utente");
+                    System.out.println("Login [username,password] -> identifica utente per l' accesso");
+                    System.out.println("Logout [username,password] -> scollega utente");
+                    //ecc...
+                }
                 else
                     menu.eseguiComando(command,socket);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            ClearScreen.clearScreen();
             in.close();
         }
     }

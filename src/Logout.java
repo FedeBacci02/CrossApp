@@ -1,28 +1,20 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.io.*;
-import java.net.*;
-
-import com.google.gson.*;
 
 import com.google.gson.Gson;
 
-public class Login implements ComandoStrategy {
-
+public class Logout implements ComandoStrategy {
+    @Override
     public void esegui(String[] parameters, Socket socket) {
-        System.out.println("Login's command is executed  ..");
-
-        if (parameters.length < 2) {
-            System.out.println("Mancano Username/Password");
-            return;
-        }
+        System.out.println("Logout's command is executed  ..");
 
         Gson gson = new Gson();
-        User utente = new User(parameters[1], parameters[2], "offline");
-        Request r = new Request("login", utente);
+        Request r = new Request("logout", new Object());
         String message = gson.toJson(r);
 
         try {
-            
             // inizializzazione delle variabili di stream
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -39,6 +31,5 @@ public class Login implements ComandoStrategy {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

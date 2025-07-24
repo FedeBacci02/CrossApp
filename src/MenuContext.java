@@ -10,6 +10,7 @@ public class MenuContext {
     public MenuContext() {
         strategie.put("login", new Login());
         strategie.put("register", new Register());
+        strategie.put("logout",new Logout());
     }
 
     public void eseguiComando(String c,Socket socket) {
