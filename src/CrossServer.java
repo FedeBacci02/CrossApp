@@ -1,4 +1,5 @@
 import java.net.*;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +11,7 @@ import java.io.*;
 public class CrossServer implements Runnable {
     private Socket socket;
     private ConcurrentHashMap<String, User> users;
-    private User utente;
+    private User utente = null;
 
     public CrossServer(Socket socket, ConcurrentHashMap<String, User> users) {
         this.socket = socket;
@@ -42,7 +43,7 @@ public class CrossServer implements Runnable {
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else if (users.containsKey(newUtente.getUsername())) {
-                        // registrazione non completata perchè password è vuota
+                        // registrazione non completata perchè username esiste già
                         AutResponse risposta = new AutResponse(102, "username is not available");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
@@ -129,21 +130,25 @@ public class CrossServer implements Runnable {
                 if (r.getOperation().equals("updateCredentials")) {
                     String values = gson.toJson(r.getValues());
                     NewUser newUtente = gson.fromJson(values, NewUser.class);
-                    System.out.println("[+] " + newUtente.getUsername() + " is trying to log in the server");
+                    System.out.println(
+                            "[+] " + newUtente.getUsername() + " is trying to uddate credentials in the server");
 
                     if (users.containsKey(newUtente.getUsername())) {
                         if (!(utente == null)) {
+                            System.out.println("[+]Error: User currently logged");
+
                             AutResponse risposta = new AutResponse(104,
                                     "user currently logged");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
-                        } else if (users.get(newUtente.getUsername()).getPassword() == newUtente.getOldPassword()) {
+                        } else if (users.get(newUtente.getUsername()).getPassword().equals(newUtente.getOldPassword())) {
                             if (!(newUtente.oldPassword == newUtente.getPassword())) {
                                 // CASO IN CUI SIA TUTTO GIUSTO
+                                System.out.println("[+]OK: Username is in the register");
 
                                 // aggiornamento dell register degl'utenti registrati
                                 users.put(newUtente.getUsername(),
-                                        new User(newUtente.getUsername(), newUtente.getPassword(), "online"));
+                                        new User(newUtente.getUsername(), newUtente.getPassword(), "offline"));
 
                                 // invio risposta al client
                                 AutResponse risposta = new AutResponse(100,
@@ -151,6 +156,8 @@ public class CrossServer implements Runnable {
                                 String jsonResponse = gson.toJson(risposta);
                                 out.println(jsonResponse);
                             } else {
+                                System.out.println("[+]Error: Password equal to old one");
+
                                 AutResponse risposta = new AutResponse(100,
                                         "new password equal to old one");
                                 String jsonResponse = gson.toJson(risposta);
@@ -158,12 +165,23 @@ public class CrossServer implements Runnable {
                             }
                         } else {
                             // invio messaggio di errore al client
+                            System.out.println(Ansi.ansi().fg(Ansi.Color.RED)
+                                    .a("[+]Error: old password is not in the register at the username "
+                                            + newUtente.getUsername())
+                                    .reset());
+
+                            System.out.println("    " + users.get(newUtente.getUsername()).getPassword() + " == "
+                                    + newUtente.getOldPassword());
+
                             AutResponse risposta = new AutResponse(102,
                                     "username/old password mismatch or non existent username");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
                         }
                     } else {
+                        // caso in cui il nome utente non è presente nel register
+                        System.out.println("[+]Error: Username is not in the register");
+
                         AutResponse risposta = new AutResponse(102,
                                 "username/old password mismatch or non existent username");
                         String jsonResponse = gson.toJson(risposta);
@@ -171,8 +189,10 @@ public class CrossServer implements Runnable {
                     }
                 }
 
-                System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a("[+] update user register: ").reset());
+                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
+                
+                
             }
 
             // set status offline
