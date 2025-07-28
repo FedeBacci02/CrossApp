@@ -23,7 +23,7 @@ public class OrderBook {
             if (!askBook.containsKey(o.getPrice())) {
                 // crea lista e aggiunge il limit order
                 askBook.put(o.getPrice(), new LinkedList<>());
-            }
+            }a
             askBook.get(o.getPrice()).add(o);
         }
     }
