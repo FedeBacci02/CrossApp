@@ -15,6 +15,10 @@ public class MenuContext {
         strategie.put("register", new Register());
         strategie.put("logout", new Logout());
         strategie.put("updatecredentials", new updateCredentials());
+        strategie.put("insertmarketorder", new insertMarketOrder());
+        //strategie.put("", new updateCredentials());
+        //strategie.put("", new updateCredentials());
+        //strategie.put("", new updateCredentials());
     }
 
     public void eseguiComando(String c, Socket socket) {

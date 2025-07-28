@@ -189,6 +189,30 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                if (r.getOperation().equals("insertmarketorder")){
+                    //insertmarketorder
+                     AutResponse risposta = new AutResponse(999,
+                                "risposta");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
+                }
+
+                if (r.getOperation().equals("insertlimitorder")){
+                    //insertmarketorder
+                     AutResponse risposta = new AutResponse(999,
+                                "risposta");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
+                }
+
+                if (r.getOperation().equals("insertstoporder")){
+                    //insertmarketorder
+                     AutResponse risposta = new AutResponse(999,
+                                "risposta");
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
+                }
+
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
                 
