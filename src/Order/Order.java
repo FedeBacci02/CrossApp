@@ -1,10 +1,12 @@
+package Order;
+
 public class Order{
     private OType type;
     private int size;
     private int price;
 
-    public Order(OType type, int size, int price) {
-        this.type = type;
+    public Order(OType type2, int size, int price) {
+        this.type = type2;
         this.size = size;
         this.price = price;
     }

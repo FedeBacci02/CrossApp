@@ -3,6 +3,8 @@ import java.io.*;
 import java.util.concurrent.*;
 import com.google.gson.*;
 
+import Order.OrderBook;
+
 import org.fusesource.jansi.Ansi;
 
 public class ServerMain {
@@ -10,6 +12,10 @@ public class ServerMain {
 
         //struttura dati per permettere al server di mantenere gli utenti registrati
         ConcurrentHashMap <String,User> users = new ConcurrentHashMap<>();
+
+        //OrderBook
+        OrderBook orderbook = new OrderBook();
+        orderbook.visualizzaOrderBook();
 
         //caricamento degl'utenti registrati
         File input = new File("resources/users.json");
@@ -28,10 +34,10 @@ public class ServerMain {
 
         //assegnazione di un thread x ogni client che vuole connettersi al server
         try (ServerSocket listener = new ServerSocket(1234)) {
-            System.out.println(Ansi.ansi().fg(Ansi.Color.RED).a("[+] Cross server is running ..").reset());
+            System.out.println(Ansi.ansi().bgBright(Ansi.Color.RED).fg(Ansi.Color.WHITE).a("[+] Cross server is running ..").reset());
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
-                pool.execute(new CrossServer(listener.accept(),users));
+                pool.execute(new CrossServer(listener.accept(),users,orderbook));
             }
 
         } catch (IOException e) {

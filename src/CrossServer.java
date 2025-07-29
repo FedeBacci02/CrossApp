@@ -1,21 +1,28 @@
 import java.net.*;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fusesource.jansi.Ansi;
 
 import com.google.gson.*;
+
+import Order.OrderContext;
+import Order.EvaluatingOrder;
+import Order.Order;
+import Order.OrderBook;
+
 import java.io.*;
 
 public class CrossServer implements Runnable {
     private Socket socket;
     private ConcurrentHashMap<String, User> users;
     private User utente = null;
+    OrderBook orderBook = null;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook) {
         this.socket = socket;
         this.users = users;
+        this.orderBook = orderBook;
     }
 
     public void run() {
@@ -31,6 +38,7 @@ public class CrossServer implements Runnable {
                 String jsonRequest = in.nextLine();
                 Request r = gson.fromJson(jsonRequest, Request.class);
                 System.out.println(Ansi.ansi().fg(Ansi.Color.BLUE).a("[+] " + r.toString()).reset());
+
                 if (r.getOperation().equals("register")) {
                     // estraiamo l'utente
                     String values = gson.toJson(r.getValues());
@@ -141,7 +149,8 @@ public class CrossServer implements Runnable {
                                     "user currently logged");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
-                        } else if (users.get(newUtente.getUsername()).getPassword().equals(newUtente.getOldPassword())) {
+                        } else if (users.get(newUtente.getUsername()).getPassword()
+                                .equals(newUtente.getOldPassword())) {
                             if (!(newUtente.oldPassword == newUtente.getPassword())) {
                                 // CASO IN CUI SIA TUTTO GIUSTO
                                 System.out.println("[+]OK: Username is in the register");
@@ -189,34 +198,44 @@ public class CrossServer implements Runnable {
                     }
                 }
 
-                if (r.getOperation().equals("insertmarketorder")){
-                    //insertmarketorder
-                     AutResponse risposta = new AutResponse(999,
-                                "risposta");
-                        String jsonResponse = gson.toJson(risposta);
-                        out.println(jsonResponse);
-                }
+                if (r.getOperation().equals("insertmarketorder") || r.getOperation().equals("insertlimitorder")
+                        || r.getOperation().equals("insertstoporder")) {
 
-                if (r.getOperation().equals("insertlimitorder")){
-                    //insertmarketorder
-                     AutResponse risposta = new AutResponse(999,
-                                "risposta");
+                    if (utente == null) {
+                        // risposta
+                        AutResponse risposta = new AutResponse(102,
+                                "NON FUNZIONA");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
-                }
+                    }else{
+                    // si estrae l'oggetto order dalla request json
+                    String values = gson.toJson(r.getValues());
+                    Order newOrder = gson.fromJson(values, Order.class);
 
-                if (r.getOperation().equals("insertstoporder")){
-                    //insertmarketorder
-                     AutResponse risposta = new AutResponse(999,
-                                "risposta");
-                        String jsonResponse = gson.toJson(risposta);
-                        out.println(jsonResponse);
+                    // creiamo oggetto ordine da valutare
+                    EvaluatingOrder eOrder = new EvaluatingOrder(newOrder.getType(), newOrder.getSize(),
+                            newOrder.getPrice(), utente.getUsername(), 1);
+
+                    // creazione oggetto context
+                    OrderContext orderContext = new OrderContext(eOrder, orderBook);
+
+                    // seleziona la strategia da applicare
+                    orderContext.setStrategy(r.getOperation());
+
+                    // avvia l'algoritmo in base alla strategia
+                    orderContext.matchOrder();
+
+                    // risposta
+                    AutResponse risposta = new AutResponse(102,
+                            "FUNZIONA");
+                    String jsonResponse = gson.toJson(risposta);
+                    out.println(jsonResponse);
+                    }
                 }
 
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
-                
-                
+
             }
 
             // set status offline

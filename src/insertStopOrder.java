@@ -8,7 +8,7 @@ import com.google.gson.*;
 import Order.Order;
 import Order.OType;
 
-public class insertMarketOrder implements ComandoStrategy {
+public class insertStopOrder implements ComandoStrategy {
 
     public User getUserCorrente() {
         return null;
@@ -17,8 +17,9 @@ public class insertMarketOrder implements ComandoStrategy {
     public void esegui(String[] parameters, Socket socket) {
         OType type;
         int size;
+        int price;
 
-        if (parameters.length < 3) {
+        if (parameters.length < 4) {
             System.out.println("Mancano parametri");
             return;
         }
@@ -28,19 +29,21 @@ public class insertMarketOrder implements ComandoStrategy {
                 // tipo selezionato ask
                 type = OType.ASK;
                 size = Integer.parseInt(parameters[2]);
+                price = Integer.parseInt(parameters[3]);
             } else if (parameters[1].toLowerCase().equals("bid")) {
                 // tipo selezionato bid
                 type = OType.BID;
                 size = Integer.parseInt(parameters[2]);
+                price = Integer.parseInt(parameters[3]);
             } else {
                 System.out.println("type non corretto: selezionale ASK o BID");
                 return;
             }
 
-            Order ordine = new Order(type, size, 0);
+            Order ordine = new Order(type, size, price);
 
             Gson gson = new Gson();
-            Request r = new Request("insertmarketorder", ordine);
+            Request r = new Request("insertstoporder", ordine);
             String message = gson.toJson(r);
 
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

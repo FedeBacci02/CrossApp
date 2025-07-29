@@ -16,9 +16,9 @@ public class MenuContext {
         strategie.put("logout", new Logout());
         strategie.put("updatecredentials", new updateCredentials());
         strategie.put("insertmarketorder", new insertMarketOrder());
-        //strategie.put("", new updateCredentials());
-        //strategie.put("", new updateCredentials());
-        //strategie.put("", new updateCredentials());
+        strategie.put("insertlimitorder", new insertLimitOrder());
+        strategie.put("insertstoporder", new insertStopOrder());
+        //strategie.put("insertmarketorder", new updateCredentials());
     }
 
     public void eseguiComando(String c, Socket socket) {
