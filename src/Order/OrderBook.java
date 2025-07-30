@@ -13,20 +13,25 @@ public class OrderBook {
         askBook = new TreeMap<>();
         bidBook = new TreeMap<>(Comparator.reverseOrder());
 
-        
-    // Seed di ordini BID
-    limitOrderInsert(new EvaluatingOrder(OType.BID, 100, 1050, "mario", 1));
-    limitOrderInsert(new EvaluatingOrder(OType.BID, 80, 1030, "luigi", 2));
-    limitOrderInsert(new EvaluatingOrder(OType.BID, 50, 1000, "peach", 3));
+        // Seed di ordini BID
+        limitOrderInsert(new EvaluatingOrder(OType.BID, 100, 1050, "mario", 1));
+        limitOrderInsert(new EvaluatingOrder(OType.BID, 80, 1030, "luigi", 2));
+        limitOrderInsert(new EvaluatingOrder(OType.BID, 50, 1000, "peach", 3));
 
-    // Seed di ordini ASK
-    limitOrderInsert(new EvaluatingOrder(OType.ASK, 70, 1080, "daisy", 4));
-    limitOrderInsert(new EvaluatingOrder(OType.ASK, 60, 1100, "wario", 5));
-    limitOrderInsert(new EvaluatingOrder(OType.ASK, 40, 1120, "yoshi", 6));
+        // Seed di ordini ASK
+        limitOrderInsert(new EvaluatingOrder(OType.ASK, 70, 1080, "daisy", 4));
+        limitOrderInsert(new EvaluatingOrder(OType.ASK, 60, 1100, "wario", 5));
+        limitOrderInsert(new EvaluatingOrder(OType.ASK, 40, 1120, "yoshi", 6));
+
+        System.out.println("Check ordine bidBook:");
+        for (Integer prezzo : bidBook.keySet()) {
+            System.out.println(prezzo);
+        }
+
     }
 
     public void limitOrderInsert(EvaluatingOrder o) {
-        if (o.getType().equals(OType.BID)) {
+        if (o.getType() == OType.BID) {
             // aggiunge nel book dei bid
             if (!bidBook.containsKey(o.getPrice())) {
                 // crea lista e aggiunge il limit order
@@ -48,8 +53,9 @@ public class OrderBook {
         // Iterating over the elements of the tree map
         System.out.print(Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.BLACK).a(String.format("%-10s", "Price")));
         System.out.print(Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.BLACK).a(String.format("%-10s", "Size")));
-        System.out.println(Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.BLACK).a(String.format("%-10s", "Total")).reset());
-        
+        System.out.println(
+                Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.BLACK).a(String.format("%-10s", "Total")).reset());
+
         for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : askBook.entrySet()) {
             // somma le dimensioni che appartegono alla stessa chiave, ossia alla solita
             // offerta/richiesta
@@ -62,7 +68,7 @@ public class OrderBook {
             System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a(String.format("%-10d", total)).reset());
         }
         System.out.println("    ");
-        for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : askBook.entrySet()) {
+        for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : bidBook.entrySet()) {
             // somma le dimensioni che appartegono alla stessa chiave, ossia alla solita
             // offerta/richiesta
             int price = entry.getKey();
@@ -90,6 +96,44 @@ public class OrderBook {
     public static int matchingAlgorithm(OrderContext orderContext) {
         orderContext.matchOrder();
         return 1;
+    }
+
+    public Map<Integer, Queue<EvaluatingOrder>> getAskBook() {
+        return askBook;
+    }
+
+    public void setAskBook(Map<Integer, Queue<EvaluatingOrder>> askBook) {
+        this.askBook = askBook;
+    }
+
+    public Map<Integer, Queue<EvaluatingOrder>> getBidBook() {
+        return bidBook;
+    }
+
+    public void setBidBook(Map<Integer, Queue<EvaluatingOrder>> bidBook) {
+        this.bidBook = bidBook;
+    }
+
+    public OrderBook backUpCreate() {
+        OrderBook oldBook = new OrderBook();
+        for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : askBook.entrySet()) {
+            Queue<EvaluatingOrder> nuovaCoda = new LinkedList<>();
+            for (EvaluatingOrder ordine : entry.getValue()) {
+                nuovaCoda.add(ordine); // Aggiungi alla nuova coda
+            }
+            oldBook.askBook.put(entry.getKey(), nuovaCoda); // Inserisci nel nuovo libro
+        }
+
+        for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : bidBook.entrySet()) {
+            Queue<EvaluatingOrder> nuovaCoda = new LinkedList<>();
+            for (EvaluatingOrder ordine : entry.getValue()) {
+                nuovaCoda.add(ordine); // Aggiungi alla nuova coda
+            }
+            oldBook.bidBook.put(entry.getKey(), nuovaCoda); // Inserisci nel nuovo libro
+        }
+
+        return oldBook;
+
     }
 
 }

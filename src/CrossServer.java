@@ -224,6 +224,9 @@ public class CrossServer implements Runnable {
 
                     // avvia l'algoritmo in base alla strategia
                     orderContext.matchOrder();
+                    
+                    
+                    orderBook.visualizzaOrderBook();
 
                     // risposta
                     AutResponse risposta = new AutResponse(102,

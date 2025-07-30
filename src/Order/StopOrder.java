@@ -2,8 +2,9 @@ package Order;
 
 public class StopOrder implements OrderStrategy {
     @Override
-    public void esegui(Order order, OrderBook orderBook) {
+    public int esegui(EvaluatingOrder order, OrderBook orderBook) {
         System.out.println("StopOrder execution");
+        return 1;
     }
 
     public String getStrategyName() {
