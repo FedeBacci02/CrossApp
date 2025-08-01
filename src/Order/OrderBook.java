@@ -115,11 +115,18 @@ public class OrderBook {
     }
 
     public OrderBook backUpCreate() {
+
+        System.out.println(">>> STAMPA DA backUpCreate() <<<");
+        this.visualizzaOrderBook(); // <-- stampa lo stato reale al momento della copia
+
         OrderBook oldBook = new OrderBook();
+        oldBook.askBook.clear();
+        oldBook.bidBook.clear();
+        
         for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : askBook.entrySet()) {
             Queue<EvaluatingOrder> nuovaCoda = new LinkedList<>();
             for (EvaluatingOrder ordine : entry.getValue()) {
-                nuovaCoda.add(ordine); // Aggiungi alla nuova coda
+                nuovaCoda.add(new EvaluatingOrder(ordine)); // Aggiungi alla nuova coda
             }
             oldBook.askBook.put(entry.getKey(), nuovaCoda); // Inserisci nel nuovo libro
         }
@@ -127,7 +134,7 @@ public class OrderBook {
         for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : bidBook.entrySet()) {
             Queue<EvaluatingOrder> nuovaCoda = new LinkedList<>();
             for (EvaluatingOrder ordine : entry.getValue()) {
-                nuovaCoda.add(ordine); // Aggiungi alla nuova coda
+                nuovaCoda.add(new EvaluatingOrder(ordine)); // Aggiungi alla nuova coda
             }
             oldBook.bidBook.put(entry.getKey(), nuovaCoda); // Inserisci nel nuovo libro
         }

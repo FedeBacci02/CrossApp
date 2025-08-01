@@ -1,6 +1,6 @@
 package Order;
 
-public class Order{
+public class Order {
     private OType type;
     private int size;
     private int price;
@@ -9,6 +9,12 @@ public class Order{
         this.type = type2;
         this.size = size;
         this.price = price;
+    }
+
+    public Order(Order other) {
+        this.type = other.type;
+        this.size = other.size;
+        this.price = other.price;
     }
 
     public OType getType() {
@@ -34,6 +40,5 @@ public class Order{
     public void setPrice(int price) {
         this.price = price;
     }
-    
-    
+
 }

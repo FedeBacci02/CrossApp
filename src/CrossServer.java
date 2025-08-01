@@ -10,6 +10,7 @@ import Order.OrderContext;
 import Order.EvaluatingOrder;
 import Order.Order;
 import Order.OrderBook;
+import Order.OrdResponse;
 
 import java.io.*;
 
@@ -223,14 +224,12 @@ public class CrossServer implements Runnable {
                     orderContext.setStrategy(r.getOperation());
 
                     // avvia l'algoritmo in base alla strategia
-                    orderContext.matchOrder();
-                    
-                    
+                    int code = orderContext.matchOrder();   //code è o orderID o -1
+                  
                     orderBook.visualizzaOrderBook();
 
                     // risposta
-                    AutResponse risposta = new AutResponse(102,
-                            "FUNZIONA");
+                    OrdResponse risposta = new OrdResponse(code);
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
                     }

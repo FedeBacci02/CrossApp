@@ -29,8 +29,8 @@ public class OrderContext {
         return sb.toString();
     }
 
-    public void matchOrder() {
-        strategy.esegui(this.order, this.orderBook);
+    public int matchOrder() {
+        return strategy.esegui(this.order, this.orderBook);
     }
 
     public OrderStrategy getStrategy() {
