@@ -25,7 +25,7 @@ public class ServerMain {
         AtomicInteger newid = new AtomicInteger(0);
 
         //thrad che gestisce una coda di ordini
-        ConcurrentLinkedQueue <EvaluatingOrder> listaOrdini = new ConcurrentLinkedQueue<>();
+        BlockingQueue <EvaluatingOrder> listaOrdini = new LinkedBlockingQueue<>();
         OrderHandler oHandler = new OrderHandler(orderbook,listaOrdini);
         Thread thread = new Thread (oHandler);
         thread.start();
@@ -50,7 +50,7 @@ public class ServerMain {
             System.out.println(Ansi.ansi().bgBright(Ansi.Color.RED).fg(Ansi.Color.WHITE).a("[+] Cross server is running ..").reset());
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
-                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid));
+                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid,listaOrdini));
             }
 
         } catch (IOException e) {

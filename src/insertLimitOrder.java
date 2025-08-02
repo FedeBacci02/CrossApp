@@ -7,6 +7,7 @@ import com.google.gson.*;
 
 import Order.Order;
 import Order.OType;
+import Order.OrdResponse;
 
 public class insertLimitOrder implements ComandoStrategy {
 
@@ -58,7 +59,7 @@ public class insertLimitOrder implements ComandoStrategy {
             String jsonResponse = in.readLine();
 
             // output al client
-            AutResponse response = AutResponse.desMessage(jsonResponse);
+            OrdResponse response = OrdResponse.desMessage(jsonResponse);
 
             System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
 

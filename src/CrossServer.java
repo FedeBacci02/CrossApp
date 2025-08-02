@@ -1,5 +1,6 @@
 import java.net.*;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,12 +22,15 @@ public class CrossServer implements Runnable {
     private User utente = null;
     OrderBook orderBook = null;
     AtomicInteger newid;
+    BlockingQueue<EvaluatingOrder> ordini;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid,
+            BlockingQueue<EvaluatingOrder> ordini) {
+        this.ordini = ordini;
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
-        this.newid=newid;
+        this.newid = newid;
     }
 
     public void run() {
@@ -204,37 +208,46 @@ public class CrossServer implements Runnable {
 
                 if (r.getOperation().equals("insertmarketorder") || r.getOperation().equals("insertlimitorder")
                         || r.getOperation().equals("insertstoporder")) {
-
+                    int code = 0;
                     if (utente == null) {
                         // risposta
                         AutResponse risposta = new AutResponse(102,
                                 "utente non loggato");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
-                    }else{
-                    // si estrae l'oggetto order dalla request json
-                    String values = gson.toJson(r.getValues());
-                    Order newOrder = gson.fromJson(values, Order.class);
+                    } else {
+                        // si estrae l'oggetto order dalla request json
+                        String values = gson.toJson(r.getValues());
+                        Order newOrder = gson.fromJson(values, Order.class);
 
-                    // creiamo oggetto ordine da valutare
-                    EvaluatingOrder eOrder = new EvaluatingOrder(newOrder.getType(), newOrder.getSize(),
-                            newOrder.getPrice(), utente.getUsername(), newid.incrementAndGet(),0,r.getOperation());
+                        // creiamo oggetto ordine da valutare
+                        EvaluatingOrder ordine = new EvaluatingOrder(newOrder.getType(), newOrder.getSize(),
+                                newOrder.getPrice(), utente.getUsername(), newid.incrementAndGet(), 0,
+                                r.getOperation());
 
-                    // creazione oggetto context
-                    OrderContext orderContext = new OrderContext(eOrder, orderBook);
+                        // aggiungiamo alla lista di ordini da valutare
+                        if (ordine.getOrderType().equals("insertstoporder")) {
+                            ordini.add(ordine);
+                        } else {
+                            // creazione oggetto context
+                            OrderContext orderContext = new OrderContext(ordine, orderBook);
 
-                    // seleziona la strategia da applicare
-                    orderContext.setStrategy(r.getOperation());
+                            // seleziona la strategia da applicare
+                            orderContext.setStrategy(ordine.getOrderType());
 
-                    // avvia l'algoritmo in base alla strategia
-                    orderContext.matchOrder();   //code è o orderID o -1
-                    
-                    orderBook.visualizzaOrderBook();
+                            // elaborare l'ordine
+                            code = orderContext.elaboraOrdine();
+                        }
 
-                    // risposta
-                    OrdResponse risposta = new OrdResponse(newid.get());
-                    String jsonResponse = gson.toJson(risposta);
-                    out.println(jsonResponse);
+                        // risposta al client
+                        if (code == -1) {
+                            OrdResponse risposta = new OrdResponse(code);
+                            String jsonResponse = gson.toJson(risposta);
+                            out.println(jsonResponse);
+                        }
+                        OrdResponse risposta = new OrdResponse(ordine.getOrderId());
+                        String jsonResponse = gson.toJson(risposta);
+                        out.println(jsonResponse);
                     }
                 }
 

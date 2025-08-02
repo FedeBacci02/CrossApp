@@ -29,7 +29,7 @@ public class OrderContext {
         return sb.toString();
     }
 
-    public int matchOrder() {
+    public int elaboraOrdine() {
         return strategy.esegui(this.order, this.orderBook);
     }
 

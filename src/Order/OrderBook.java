@@ -13,16 +13,6 @@ public class OrderBook {
         askBook = new TreeMap<>();
         bidBook = new TreeMap<>(Comparator.reverseOrder());
 
-        // Seed di ordini BID
-        limitOrderInsert(new EvaluatingOrder(OType.BID, 100, 1050, "mario", 1));
-        limitOrderInsert(new EvaluatingOrder(OType.BID, 80, 1030, "luigi", 2));
-        limitOrderInsert(new EvaluatingOrder(OType.BID, 50, 1000, "peach", 3));
-
-        // Seed di ordini ASK
-        limitOrderInsert(new EvaluatingOrder(OType.ASK, 70, 1080, "daisy", 4));
-        limitOrderInsert(new EvaluatingOrder(OType.ASK, 60, 1100, "wario", 5));
-        limitOrderInsert(new EvaluatingOrder(OType.ASK, 40, 1120, "yoshi", 6));
-
         System.out.println("Check ordine bidBook:");
         for (Integer prezzo : bidBook.keySet()) {
             System.out.println(prezzo);
@@ -89,13 +79,6 @@ public class OrderBook {
             sommaSize = sommaSize + iterator.next().getSize();
         }
         return sommaSize;
-    }
-
-    // algoritmo di matching (ritorna 1 se è stato matchato con successo, -1
-    // altrimenti)
-    public static int matchingAlgorithm(OrderContext orderContext) {
-        orderContext.matchOrder();
-        return 1;
     }
 
     public Map<Integer, Queue<EvaluatingOrder>> getAskBook() {
