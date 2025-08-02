@@ -4,12 +4,15 @@ public class EvaluatingOrder extends Order {
 
     private int orderId;
     private String username;
+    private String orderType;
 
     // Costruttore standard
-    public EvaluatingOrder(OType type2, int size, int price, String username, int orderId) {
+    public EvaluatingOrder(OType type2, int size, int price, String username, int orderId, int timestamp,
+            String orderType) {
         super(type2, size, price);
         this.orderId = orderId;
         this.username = username;
+        this.orderType = orderType;
     }
 
     // Costruttore di copia (deep copy)
@@ -18,7 +21,7 @@ public class EvaluatingOrder extends Order {
         this.orderId = other.orderId;
         this.username = other.username;
     }
-
+    
     public int getOrderId() {
         return orderId;
     }
@@ -33,5 +36,13 @@ public class EvaluatingOrder extends Order {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
     }
 }

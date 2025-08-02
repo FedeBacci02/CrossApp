@@ -1,6 +1,7 @@
 import java.net.*;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.fusesource.jansi.Ansi;
 
@@ -19,11 +20,13 @@ public class CrossServer implements Runnable {
     private ConcurrentHashMap<String, User> users;
     private User utente = null;
     OrderBook orderBook = null;
+    AtomicInteger newid;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid) {
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
+        this.newid=newid;
     }
 
     public void run() {
@@ -205,7 +208,7 @@ public class CrossServer implements Runnable {
                     if (utente == null) {
                         // risposta
                         AutResponse risposta = new AutResponse(102,
-                                "NON FUNZIONA");
+                                "utente non loggato");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     }else{
@@ -215,7 +218,7 @@ public class CrossServer implements Runnable {
 
                     // creiamo oggetto ordine da valutare
                     EvaluatingOrder eOrder = new EvaluatingOrder(newOrder.getType(), newOrder.getSize(),
-                            newOrder.getPrice(), utente.getUsername(), 1);
+                            newOrder.getPrice(), utente.getUsername(), newid.incrementAndGet(),0,r.getOperation());
 
                     // creazione oggetto context
                     OrderContext orderContext = new OrderContext(eOrder, orderBook);
@@ -224,12 +227,12 @@ public class CrossServer implements Runnable {
                     orderContext.setStrategy(r.getOperation());
 
                     // avvia l'algoritmo in base alla strategia
-                    int code = orderContext.matchOrder();   //code è o orderID o -1
-                  
+                    orderContext.matchOrder();   //code è o orderID o -1
+                    
                     orderBook.visualizzaOrderBook();
 
                     // risposta
-                    OrdResponse risposta = new OrdResponse(code);
+                    OrdResponse risposta = new OrdResponse(newid.get());
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
                     }
