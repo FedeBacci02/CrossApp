@@ -5,9 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.*;
 
-import Order.EvaluatingOrder;
 import Order.OrderBook;
-import Order.OrderHandler;
 
 import org.fusesource.jansi.Ansi;
 
@@ -23,12 +21,6 @@ public class ServerMain {
         
         //orderId inizializzazione
         AtomicInteger newid = new AtomicInteger(0);
-
-        //thrad che gestisce una coda di ordini
-        BlockingQueue <EvaluatingOrder> listaOrdini = new LinkedBlockingQueue<>();
-        OrderHandler oHandler = new OrderHandler(orderbook,listaOrdini);
-        Thread thread = new Thread (oHandler);
-        thread.start();
 
         //caricamento degl'utenti registrati
         File input = new File("resources/users.json");
@@ -50,7 +42,7 @@ public class ServerMain {
             System.out.println(Ansi.ansi().bgBright(Ansi.Color.RED).fg(Ansi.Color.WHITE).a("[+] Cross server is running ..").reset());
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
-                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid,listaOrdini));
+                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid));
             }
 
         } catch (IOException e) {

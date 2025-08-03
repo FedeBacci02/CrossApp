@@ -7,6 +7,7 @@ import com.google.gson.*;
 
 import Order.Order;
 import Order.OType;
+import Order.OrdResponse;
 
 public class insertStopOrder implements ComandoStrategy {
 
@@ -58,9 +59,9 @@ public class insertStopOrder implements ComandoStrategy {
             String jsonResponse = in.readLine();
 
             // output al client
-            AutResponse response = AutResponse.desMessage(jsonResponse);
+            OrdResponse response = OrdResponse.desMessage(jsonResponse);
 
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -5,11 +5,14 @@ import java.util.*;
 import org.fusesource.jansi.Ansi;
 
 public class OrderBook {
-    Map<Integer, Queue<EvaluatingOrder>> askBook; // Chiave: "price" Values: "Order"
-    Map<Integer, Queue<EvaluatingOrder>> bidBook;
+    TreeMap<Integer, Queue<EvaluatingOrder>> askBook; // Chiave: "price" Values: "Order"
+    TreeMap<Integer, Queue<EvaluatingOrder>> bidBook;
+
+    List<EvaluatingOrder> stopOrders;
 
     public OrderBook() {
 
+        stopOrders = new LinkedList<>();
         askBook = new TreeMap<>();
         bidBook = new TreeMap<>(Comparator.reverseOrder());
 
@@ -20,7 +23,7 @@ public class OrderBook {
 
     }
 
-    public void limitOrderInsert(EvaluatingOrder o) {
+    public synchronized void limitOrderInsert(EvaluatingOrder o) {
         if (o.getType() == OType.BID) {
             // aggiunge nel book dei bid
             if (!bidBook.containsKey(o.getPrice())) {
@@ -85,7 +88,7 @@ public class OrderBook {
         return askBook;
     }
 
-    public void setAskBook(Map<Integer, Queue<EvaluatingOrder>> askBook) {
+    public void setAskBook(TreeMap<Integer, Queue<EvaluatingOrder>> askBook) {
         this.askBook = askBook;
     }
 
@@ -93,7 +96,7 @@ public class OrderBook {
         return bidBook;
     }
 
-    public void setBidBook(Map<Integer, Queue<EvaluatingOrder>> bidBook) {
+    public void setBidBook(TreeMap<Integer, Queue<EvaluatingOrder>> bidBook) {
         this.bidBook = bidBook;
     }
 
@@ -105,7 +108,7 @@ public class OrderBook {
         OrderBook oldBook = new OrderBook();
         oldBook.askBook.clear();
         oldBook.bidBook.clear();
-        
+
         for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : askBook.entrySet()) {
             Queue<EvaluatingOrder> nuovaCoda = new LinkedList<>();
             for (EvaluatingOrder ordine : entry.getValue()) {
@@ -124,6 +127,83 @@ public class OrderBook {
 
         return oldBook;
 
+    }
+
+    public void stopOrderMatch() {
+
+        Iterator<EvaluatingOrder> iterator = stopOrders.iterator();
+        OrderStrategy strategy = new MarketOrder();
+
+        while (iterator.hasNext()) {
+            EvaluatingOrder ordine = iterator.next();
+            switch (ordine.getType()) {
+                case BID:
+                    if (ordine.getPrice() >= askBook.firstKey())
+                        strategy.esegui(ordine, this);
+                    break;
+                case ASK:
+                    if (ordine.getPrice() <= bidBook.firstKey())
+                        strategy.esegui(ordine, this);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public synchronized void matchLimitOrders() {
+        // Finché ci sono bid e ask da matchare
+        while (!bidBook.isEmpty() && !askBook.isEmpty()) {
+            int highestBidPrice = bidBook.firstKey(); // Bid più alto
+            int lowestAskPrice = askBook.firstKey(); // Ask più basso
+
+            // Controlla se i prezzi matchano
+            if (highestBidPrice >= lowestAskPrice) {
+                Queue<EvaluatingOrder> bidQueue = bidBook.get(highestBidPrice);
+                Queue<EvaluatingOrder> askQueue = askBook.get(lowestAskPrice);
+
+                EvaluatingOrder bidOrder = bidQueue.peek();
+                EvaluatingOrder askOrder = askQueue.peek();
+
+                int bidSize = bidOrder.getSize();
+                int askSize = askOrder.getSize();
+
+                int tradedSize = Math.min(bidSize, askSize);
+                int tradePrice = lowestAskPrice; // Spesso si esegue al prezzo ask
+
+                // Esegui il trade (puoi aggiungere log o callback)
+                System.out.printf("Trade executed: Size=%d at Price=%d%n", tradedSize, tradePrice);
+
+                // Aggiorna le quantità residue
+                bidOrder.setSize(bidSize - tradedSize);
+                askOrder.setSize(askSize - tradedSize);
+
+                // Rimuovi ordini completati
+                if (bidOrder.getSize() == 0) {
+                    bidQueue.poll();
+                    if (bidQueue.isEmpty()) {
+                        bidBook.remove(highestBidPrice);
+                    }
+                }
+                if (askOrder.getSize() == 0) {
+                    askQueue.poll();
+                    if (askQueue.isEmpty()) {
+                        askBook.remove(lowestAskPrice);
+                    }
+                }
+            } else {
+                // Nessun match possibile
+                break;
+            }
+        }
+    }
+
+    public List<EvaluatingOrder> getStopOrders() {
+        return stopOrders;
+    }
+
+    public void setStopOrders(List<EvaluatingOrder> stopOrders) {
+        this.stopOrders = stopOrders;
     }
 
 }

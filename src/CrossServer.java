@@ -1,6 +1,5 @@
 import java.net.*;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,11 +21,8 @@ public class CrossServer implements Runnable {
     private User utente = null;
     OrderBook orderBook = null;
     AtomicInteger newid;
-    BlockingQueue<EvaluatingOrder> ordini;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid,
-            BlockingQueue<EvaluatingOrder> ordini) {
-        this.ordini = ordini;
+    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid) {
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
@@ -225,19 +221,14 @@ public class CrossServer implements Runnable {
                                 newOrder.getPrice(), utente.getUsername(), newid.incrementAndGet(), 0,
                                 r.getOperation());
 
-                        // aggiungiamo alla lista di ordini da valutare
-                        if (ordine.getOrderType().equals("insertstoporder")) {
-                            ordini.add(ordine);
-                        } else {
-                            // creazione oggetto context
-                            OrderContext orderContext = new OrderContext(ordine, orderBook);
+                        // creazione oggetto context
+                        OrderContext orderContext = new OrderContext(ordine, orderBook);
 
-                            // seleziona la strategia da applicare
-                            orderContext.setStrategy(ordine.getOrderType());
+                        // seleziona la strategia da applicare
+                        orderContext.setStrategy(ordine.getOrderType());
 
-                            // elaborare l'ordine
-                            code = orderContext.elaboraOrdine();
-                        }
+                        // elaborare l'ordine
+                        code = orderContext.elaboraOrdine();
 
                         // risposta al client
                         if (code == -1) {
@@ -253,6 +244,8 @@ public class CrossServer implements Runnable {
 
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
+                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update order book: ").reset());
+                orderBook.visualizzaOrderBook();
 
             }
 
