@@ -7,11 +7,7 @@ import org.fusesource.jansi.Ansi;
 
 import com.google.gson.*;
 
-import Order.OrderContext;
-import Order.EvaluatingOrder;
-import Order.Order;
-import Order.OrderBook;
-import Order.OrdResponse;
+import Order.*;
 
 import java.io.*;
 
@@ -155,7 +151,7 @@ public class CrossServer implements Runnable {
                             out.println(jsonResponse);
                         } else if (users.get(newUtente.getUsername()).getPassword()
                                 .equals(newUtente.getOldPassword())) {
-                            if (!(newUtente.oldPassword == newUtente.getPassword())) {
+                            if (!(newUtente.getOldPassword() == newUtente.getPassword())) {
                                 // CASO IN CUI SIA TUTTO GIUSTO
                                 System.out.println("[+]OK: Username is in the register");
 
@@ -207,8 +203,7 @@ public class CrossServer implements Runnable {
                     int code = 0;
                     if (utente == null) {
                         // risposta
-                        AutResponse risposta = new AutResponse(102,
-                                "utente non loggato");
+                        OrdResponse risposta = new OrdResponse(-1);
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else {
@@ -242,6 +237,37 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                if (r.getOperation().equals("cancelorder")) {
+
+                    AutResponse risposta;
+
+                    if (utente == null) {
+                        // risposta
+                        risposta = new AutResponse(102,
+                                "utente non loggato");
+                    } else {
+                        String values = gson.toJson(r.getValues());
+                        cancelOrderRequest orderid = gson.fromJson(values, cancelOrderRequest.class);
+                        int code = orderBook.cancelOrder(orderid.getOrderId());
+                        if (code == 1) {
+                            risposta = new AutResponse(100,
+                                    "OK");
+                        } else {
+                            risposta = new AutResponse(101,
+                                    "order does not exist");
+                        }
+
+                    }
+
+                    String jsonResponse = gson.toJson(risposta);
+                    out.println(jsonResponse);
+                }
+
+                if (r.getOperation().equals("getpricehistory")) {
+
+                }
+
+                // output di eventuali aggiornamenti a schermo per controlli
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
                 System.out.println(users.toString());
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update order book: ").reset());

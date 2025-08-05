@@ -6,6 +6,7 @@ import org.fusesource.jansi.Ansi;
 import com.google.gson.*;
 
 import Order.Order;
+import exceptions.InvalidatePriceSizeException;
 import Order.OType;
 import Order.OrdResponse;
 
@@ -28,17 +29,24 @@ public class insertMarketOrder implements ComandoStrategy {
             if (parameters[1].toLowerCase().equals("ask")) {
                 // tipo selezionato ask
                 type = OType.ASK;
-                size = Integer.parseInt(parameters[2]);
+
             } else if (parameters[1].toLowerCase().equals("bid")) {
                 // tipo selezionato bid
                 type = OType.BID;
-                size = Integer.parseInt(parameters[2]);
             } else {
                 System.out.println("type non corretto: selezionale ASK o BID");
                 return;
             }
 
-            Order ordine = new Order(type, size, 0);
+            try {
+                size = Integer.parseInt(parameters[2]);
+                Order.validateOrderInput(size, 1);
+            } catch (InvalidatePriceSizeException ex) {
+                System.out.println("err: " + ex.getMessage());
+                return;
+            }
+
+            Order ordine = new Order(type, size, 1);
 
             Gson gson = new Gson();
             Request r = new Request("insertmarketorder", ordine);
@@ -57,9 +65,8 @@ public class insertMarketOrder implements ComandoStrategy {
 
             // output al client
             OrdResponse response = OrdResponse.desMessage(jsonResponse);
-           
 
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a( response.toString()).reset());
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

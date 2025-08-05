@@ -6,6 +6,7 @@ import org.fusesource.jansi.Ansi;
 import com.google.gson.*;
 
 import Order.Order;
+import exceptions.InvalidatePriceSizeException;
 import Order.OType;
 import Order.OrdResponse;
 
@@ -29,15 +30,21 @@ public class insertLimitOrder implements ComandoStrategy {
             if (parameters[1].toLowerCase().equals("ask")) {
                 // tipo selezionato ask
                 type = OType.ASK;
-                size = Integer.parseInt(parameters[2]);
-                price = Integer.parseInt(parameters[3]);
+
             } else if (parameters[1].toLowerCase().equals("bid")) {
                 // tipo selezionato bid
                 type = OType.BID;
-                size = Integer.parseInt(parameters[2]);
-                price = Integer.parseInt(parameters[3]);
             } else {
                 System.out.println("type non corretto: selezionale ASK o BID");
+                return;
+            }
+
+            try {
+                size = Integer.parseInt(parameters[2]);
+                price = Integer.parseInt(parameters[3]);
+                Order.validateOrderInput(size, price);
+            } catch (InvalidatePriceSizeException ex) {
+                System.out.println("Err: " + ex.getMessage());
                 return;
             }
 

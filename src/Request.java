@@ -1,6 +1,9 @@
+import com.google.gson.*;
+
+
 public class Request{
-    String operation;
-    Object values;
+    private String operation;
+    private Object values;
 
     public Request(String operation, Object values) {
         this.operation = operation;
@@ -9,7 +12,9 @@ public class Request{
 
     @Override
     public String toString() {
-        return "Request [operation=" + operation + ", values=" + values + "]";
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = gson.toJson(this);
+        return jsonString;
     }
 
     public String getOperation() {

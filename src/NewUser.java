@@ -1,5 +1,5 @@
 public class NewUser extends User {
-    String oldPassword;
+    private String oldPassword;
 
     public NewUser(String oldPassword, String username, String password, String status) {
         super(username, password, status);

@@ -1,5 +1,9 @@
 package Order;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+
 public class EvaluatingOrder extends Order {
 
     private int orderId;
@@ -22,6 +26,43 @@ public class EvaluatingOrder extends Order {
         this.username = other.username;
     }
     
+    //cancella un ordine da valutare nell'orderbook
+    public static int cancelEvaluatingOrder(int orderId, OrderBook orderBook) {
+
+        //cerca e nel caso cancella dalla lista degli stop order
+        Iterator<EvaluatingOrder> iterator = orderBook.getStopOrders().iterator();
+        if (iterator.hasNext()) {
+            if (iterator.next().getOrderId() == orderId) {
+                iterator.remove();
+                return 1;
+            }
+        }
+
+        //cerca e nel caso cancella dall book degli ask
+        for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
+            for (EvaluatingOrder ordine : entry.getValue()) {
+                if (ordine.getOrderId() == orderId){
+                    entry.getValue().remove(ordine);
+                    return 1;
+                }
+            }
+        }
+
+        //cerca e nel caso cancella dall book degli bid
+        for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
+            for (EvaluatingOrder ordine : entry.getValue()) {
+                if (ordine.getOrderId() == orderId){
+                    entry.getValue().remove(ordine);
+                    return 1;
+                }
+            }
+        }
+
+        //nel caso non fosse un ordine in lista
+        return 0;
+
+    }
+
     public int getOrderId() {
         return orderId;
     }

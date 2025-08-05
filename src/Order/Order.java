@@ -1,5 +1,7 @@
 package Order;
 
+import exceptions.InvalidatePriceSizeException;
+
 public class Order {
     private OType type;
     private int size;
@@ -39,6 +41,16 @@ public class Order {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public static void validateOrderInput(int size, int price)throws InvalidatePriceSizeException{
+
+        final int MAX = 2147483647;
+        final int MIN = 1;
+
+        if(size < MIN || price < MIN || size > MAX || price > MAX){
+            throw new InvalidatePriceSizeException("Valore non valido");
+        }
     }
 
 }

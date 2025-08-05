@@ -21,7 +21,7 @@ public class MarketOrder implements OrderStrategy {
         switch (order.getType()) {
             case ASK:
                 System.out.println("[+] esegue ASK");
-                for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : orderBook.getBidBook().entrySet()) {
+                for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getBidBook().entrySet()) {
 
                     Iterator<EvaluatingOrder> iterator = entry.getValue().iterator();
 
@@ -42,7 +42,7 @@ public class MarketOrder implements OrderStrategy {
                         }
                     }
 
-                    // controlliamo se la lista è vuota
+                    // controlliamo se la lista è vuota e aggiungiamo la chiave da rimuovere in lista
                     if (entry.getValue().isEmpty())
                         daRimuovere.add(entry.getKey());
                 }
@@ -70,7 +70,7 @@ public class MarketOrder implements OrderStrategy {
                 }
             case BID:
                 System.out.println("[+] esegue BID");
-                for (Map.Entry<Integer, Queue<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
+                for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
 
                     Iterator<EvaluatingOrder> iterator2 = entry.getValue().iterator();
 
