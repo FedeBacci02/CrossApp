@@ -1,6 +1,5 @@
 import com.google.gson.*;
 
-
 public class Request{
     private String operation;
     private Object values;

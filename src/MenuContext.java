@@ -18,8 +18,8 @@ public class MenuContext {
         strategie.put("insertmarketorder", new insertMarketOrder());
         strategie.put("insertlimitorder", new insertLimitOrder());
         strategie.put("insertstoporder", new insertStopOrder());
-        strategie.put("cancelorder", new updateCredentials());
-        strategie.put("getpricehistory", new updateCredentials());
+        strategie.put("cancelorder", new CancelOrder());
+        strategie.put("getpricehistory", new GetHistoryPrice());
     }
 
     public void eseguiComando(String c, Socket socket) {

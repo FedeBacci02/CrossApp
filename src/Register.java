@@ -19,7 +19,7 @@ public class Register implements ComandoStrategy {
         }
 
         Gson gson = new Gson();
-        User utente = new User(parameters[1], parameters[2],"offline");
+        User utente = new User(parameters[1], parameters[2]);
         Request r = new Request("register", utente);
         String message = gson.toJson(r);
 

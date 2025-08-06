@@ -1,12 +1,10 @@
 public class User {
     private String username;
     private String password;
-    private String status;
 
-    public User(String username, String password, String status) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.status = status;
     }
 
     public String getUsername() {
@@ -27,15 +25,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [username=" + username + ", password=" + password + ", status=" + status + "]";
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+        return "username=" + username + ", password=" + password ;
     }
 
 }

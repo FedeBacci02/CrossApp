@@ -13,7 +13,7 @@ public class ServerMain {
     public static void main(String[] args) throws Exception {
 
         //struttura dati per permettere al server di mantenere gli utenti registrati
-        ConcurrentHashMap <String,User> users = new ConcurrentHashMap<>();
+        ConcurrentHashMap <String,UserConnected> users = new ConcurrentHashMap<>();
 
         //OrderBook
         OrderBook orderbook = new OrderBook();
@@ -32,7 +32,7 @@ public class ServerMain {
             String username = userJsonObject.get("username").getAsString();
             String password = userJsonObject.get("password").getAsString();
             String status = userJsonObject.get("status").getAsString();
-            users.put(username, new User(username,password,status));
+            users.put(username, new UserConnected(username,password,status));
         }
 
         System.out.println(users.toString());

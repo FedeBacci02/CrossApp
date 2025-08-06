@@ -13,13 +13,13 @@ public class Login implements ComandoStrategy {
     public void esegui(String[] parameters, Socket socket) {
         // System.out.println("Login's command is executed ..");
 
-        if (parameters.length < 3) {
-            System.out.println("Mancano Username/Password");
+        if (parameters.length != 3) {
+            System.out.println("Errore: Mancano Username/Password");
             return;
         }
 
         Gson gson = new Gson();
-        User utente = new User(parameters[1], parameters[2], "offline");
+        User utente = new User(parameters[1], parameters[2]);
         Request r = new Request("login", utente);
         String message = gson.toJson(r);
 
@@ -41,7 +41,7 @@ public class Login implements ComandoStrategy {
             AutResponse response = AutResponse.desMessage(jsonResponse);
             if(response.getCode() == 100)
                 utenteCorrente = utente;
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             e.printStackTrace();

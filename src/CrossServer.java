@@ -1,4 +1,5 @@
 import java.net.*;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,12 +14,12 @@ import java.io.*;
 
 public class CrossServer implements Runnable {
     private Socket socket;
-    private ConcurrentHashMap<String, User> users;
-    private User utente = null;
+    private ConcurrentHashMap<String, UserConnected> users;
+    private UserConnected utente = null;
     OrderBook orderBook = null;
     AtomicInteger newid;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, User> users, OrderBook orderBook, AtomicInteger newid) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, UserConnected> users, OrderBook orderBook, AtomicInteger newid) {
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
@@ -42,8 +43,9 @@ public class CrossServer implements Runnable {
                 if (r.getOperation().equals("register")) {
                     // estraiamo l'utente
                     String values = gson.toJson(r.getValues());
-                    User newUtente = gson.fromJson(values, User.class);
-                    System.out.println("[+] " + newUtente.getUsername() + " tenta la registrazione");
+                    User userToConnect = gson.fromJson(values, User.class);
+                    UserConnected newUtente = UserConnected.toConnect(userToConnect);
+                    System.out.println("[+] " + newUtente.getUsername() + " is trying to register");
 
                     if (newUtente.getPassword().isEmpty()) {
                         // registrazione non completata perchè password è vuota
@@ -74,20 +76,19 @@ public class CrossServer implements Runnable {
 
                 if (r.getOperation().equals("login")) {
                     String values = gson.toJson(r.getValues());
-                    User newUtente = gson.fromJson(values, User.class);
+                    User userToConnect = gson.fromJson(values, User.class);
+                    UserConnected newUtente = UserConnected.toConnect(userToConnect);
                     System.out.println("[+] " + newUtente.getUsername() + " is trying to log in the server");
 
                     if (users.containsKey(newUtente.getUsername())) {
                         if (users.get(newUtente.getUsername()).getPassword().equals(newUtente.getPassword())) {
                             // accesso consentito
-                            System.out.println("a");
                             if (!users.get(newUtente.getUsername()).getStatus().equals("online")) {
                                 if (utente != null) {
                                     AutResponse risposta = new AutResponse(103, "other cases error");
                                     String jsonResponse = gson.toJson(risposta);
                                     out.println(jsonResponse);
                                 } else {
-                                    System.out.println("b");
                                     utente = newUtente;
                                     utente.setStatus("online");
                                     users.put(utente.getUsername(), utente);
@@ -96,26 +97,22 @@ public class CrossServer implements Runnable {
                                     out.println(jsonResponse);
                                 }
                             } else {
-                                System.out.println("e");
                                 AutResponse risposta = new AutResponse(103, "fother error cases");
                                 String jsonResponse = gson.toJson(risposta);
                                 out.println(jsonResponse);
                             }
                         } else {
-                            System.out.println("e");
                             AutResponse risposta = new AutResponse(102,
                                     "Username/password mismatch or non existent username");
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
                         }
                     } else {
-                        System.out.println("f");
                         AutResponse risposta = new AutResponse(101,
                                 "Username/password mismatch or non existent username");
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     }
-                    System.out.println("z");
                 }
 
                 if (r.getOperation().equals("logout")) {
@@ -125,7 +122,7 @@ public class CrossServer implements Runnable {
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
                     } else {
-                        utente.setStatus("offline");
+                        utente.toOffline();
                         users.put(utente.getUsername(), utente);
                         utente = null;
                         AutResponse risposta = new AutResponse(100,
@@ -155,9 +152,9 @@ public class CrossServer implements Runnable {
                                 // CASO IN CUI SIA TUTTO GIUSTO
                                 System.out.println("[+]OK: Username is in the register");
 
-                                // aggiornamento dell register degl'utenti registrati
+                                // aggiornamento del register degl'utenti registrati
                                 users.put(newUtente.getUsername(),
-                                        new User(newUtente.getUsername(), newUtente.getPassword(), "offline"));
+                                        new UserConnected(newUtente.getUsername(), newUtente.getPassword(), "offline"));
 
                                 // invio risposta al client
                                 AutResponse risposta = new AutResponse(100,
@@ -240,24 +237,27 @@ public class CrossServer implements Runnable {
                 if (r.getOperation().equals("cancelorder")) {
 
                     AutResponse risposta;
-
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " tenta di cancellare un ordine ").reset());
                     if (utente == null) {
                         // risposta
                         risposta = new AutResponse(102,
                                 "utente non loggato");
                     } else {
                         String values = gson.toJson(r.getValues());
-                        cancelOrderRequest orderid = gson.fromJson(values, cancelOrderRequest.class);
+                        CancelOrderRequest orderid = gson.fromJson(values, CancelOrderRequest.class);
                         int code = orderBook.cancelOrder(orderid.getOrderId());
                         if (code == 1) {
                             risposta = new AutResponse(100,
                                     "OK");
+                            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " ordine cancellato con successo ").reset());
                         } else {
                             risposta = new AutResponse(101,
                                     "order does not exist");
+                            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " errore ").reset());
                         }
 
                     }
+
 
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
@@ -269,7 +269,9 @@ public class CrossServer implements Runnable {
 
                 // output di eventuali aggiornamenti a schermo per controlli
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
-                System.out.println(users.toString());
+                for(Map.Entry<String,UserConnected> entry : users.entrySet()){
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a(entry.getValue().toString()).reset());
+                }
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update order book: ").reset());
                 orderBook.visualizzaOrderBook();
 
@@ -277,7 +279,7 @@ public class CrossServer implements Runnable {
 
             // set status offline
             if (utente != null) {
-                utente.setStatus("offline");
+                utente.toOffline();
                 users.put(utente.getUsername(), utente);
             }
 

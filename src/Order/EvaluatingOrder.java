@@ -43,6 +43,8 @@ public class EvaluatingOrder extends Order {
             for (EvaluatingOrder ordine : entry.getValue()) {
                 if (ordine.getOrderId() == orderId){
                     entry.getValue().remove(ordine);
+                    if(entry.getValue().isEmpty())
+                        orderBook.getAskBook().remove(entry.getKey());
                     return 1;
                 }
             }
