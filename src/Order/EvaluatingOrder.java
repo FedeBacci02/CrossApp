@@ -11,9 +11,9 @@ public class EvaluatingOrder extends Order {
     private String orderType;
 
     // Costruttore standard
-    public EvaluatingOrder(OType type2, int size, int price, String username, int orderId, int timestamp,
+    public EvaluatingOrder(OType type, int size, int price, String username, int orderId, int timestamp,
             String orderType) {
-        super(type2, size, price);
+        super(type, size, price);
         this.orderId = orderId;
         this.username = username;
         this.orderType = orderType;

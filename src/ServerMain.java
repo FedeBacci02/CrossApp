@@ -6,14 +6,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.gson.*;
 
 import Order.OrderBook;
+import Order.OrderHistory;
 
 import org.fusesource.jansi.Ansi;
 
 public class ServerMain {
     public static void main(String[] args) throws Exception {
 
+        System.out.println(Ansi.ansi().fg(Ansi.Color.RED).a("[+] Cross server is loading").reset());
+
         //struttura dati per permettere al server di mantenere gli utenti registrati
         ConcurrentHashMap <String,UserConnected> users = new ConcurrentHashMap<>();
+
+        //carica Ordini storici
+        OrderHistory oHistory = new OrderHistory();
+        oHistory.loadOrdersFromFile("resources/storicoOrdini.json");
+        System.out.println(oHistory.filtraPerMese("10/2024"));
 
         //OrderBook
         OrderBook orderbook = new OrderBook();
@@ -42,7 +50,7 @@ public class ServerMain {
             System.out.println(Ansi.ansi().bgBright(Ansi.Color.RED).fg(Ansi.Color.WHITE).a("[+] Cross server is running ..").reset());
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
-                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid));
+                pool.execute(new CrossServer(listener.accept(),users,orderbook,newid, oHistory));
             }
 
         } catch (IOException e) {

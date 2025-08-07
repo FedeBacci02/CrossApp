@@ -15,15 +15,17 @@ import java.io.*;
 public class CrossServer implements Runnable {
     private Socket socket;
     private ConcurrentHashMap<String, UserConnected> users;
+    private OrderHistory oHistory = new OrderHistory();
     private UserConnected utente = null;
     OrderBook orderBook = null;
     AtomicInteger newid;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, UserConnected> users, OrderBook orderBook, AtomicInteger newid) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, UserConnected> users, OrderBook orderBook, AtomicInteger newid, OrderHistory oHistory) {
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
         this.newid = newid;
+        this.oHistory = oHistory;
     }
 
     public void run() {
@@ -264,7 +266,15 @@ public class CrossServer implements Runnable {
                 }
 
                 if (r.getOperation().equals("getpricehistory")) {
+                    
+                    String values = gson.toJson(r.getValues());
+                    GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);
+                    oHistory.filtraPerMese(request.getMonth());
 
+                    //da finire 
+                    
+                    String jsonResponse = gson.toJson(risposta);
+                    out.println(jsonResponse);
                 }
 
                 // output di eventuali aggiornamenti a schermo per controlli

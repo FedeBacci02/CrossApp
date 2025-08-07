@@ -1,5 +1,6 @@
 package Order;
 
 public enum OType{
-    BID,ASK;
+    BID,
+    ASK;
 }
