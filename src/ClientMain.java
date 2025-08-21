@@ -1,16 +1,22 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.fusesource.jansi.Ansi;
 
 public class ClientMain {
-    public static void main(String[] args) {
-
-        // controllo se l'input da CLI
-        if (args.length != 1) {
-            System.err.println("Pass thr server IP as the sole command line argument");
-            return ;
-        }
+    public static void main(String[] args) throws IOException{
+        
+        // config del Client
+        Prop config = new Prop("resources/client.properties");
+        
+        //inzializzazione del timer
+        AtomicInteger timer = new AtomicInteger(20);
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.submit(new LogoutUserHandler(timer));
 
         // input da tastiera
         Scanner in = new Scanner(System.in);
@@ -21,18 +27,19 @@ public class ClientMain {
         // System.out.println(ip);
         boolean end = false;
 
-        //titolo della scermata principale
+        // titolo della schermata principale
         ClearScreen.clearScreen();
         System.out.println(Ansi.ansi().fgYellow().a("CROSS: an exChange oRder bOokS Service").reset());
 
         // gestione della comunicazione col server
-        try (Socket socket = new Socket(args[0], 1234)) {
+        try (Socket socket = new Socket(config.get("server.host"), config.getInt("server.port"))) {
             while (end != true) {
                 if(menu.getUtenteCorrente() != null)
                     System.out.print( menu.getUtenteCorrente().getUsername()+"> ");
                 else
                     System.out.print("> ");
                 String command = in.nextLine();
+                timer.set(20);
                 if (command.toLowerCase().equals("exit"))
                     end = true;
                 else if (command.toLowerCase().equals("clean")){
@@ -41,10 +48,14 @@ public class ClientMain {
                 }
                 else if (command.toLowerCase().equals("help")){
                     System.out.println("Command list of Cross App:");
-                    System.out.println("Register username password -> registra nuovo utente");
-                    System.out.println("Login username password -> identifica utente per l' accesso");
+                    System.out.println("Register (username password) -> registra nuovo utente");
+                    System.out.println("Login (username password) -> identifica utente per l' accesso");
                     System.out.println("Logout  -> scollega utente");
-                    System.out.println("UpdateCredentials username oldPassword newpassword -> aggiorna credenziali utente");
+                    System.out.println("UpdateCredentials (username oldPassword newpassword) -> aggiorna credenziali utente");
+                    System.out.println("InsertMarketOrder (tipo dimensione) -> inserisci uno MarketOrder");
+                    System.out.println("InsertStopOrder  (tipo dimensione stopPrice)-> inserisci uno StopOrder");
+                    System.out.println("InsertLimitOrder (tipo dimensione prezzoLimite) -> inserisci uno LimitOrder");
+                    System.out.println("CancelOrder  -> cancella ordine ancora non evaso");
                     System.out.println("Clean  -> pulisce la schermata");
                 }
                 else
@@ -53,6 +64,7 @@ public class ClientMain {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            service.shutdownNow();
             in.close();
         }
     }

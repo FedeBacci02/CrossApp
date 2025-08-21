@@ -1,13 +1,11 @@
 package Order;
 
-import java.time.*;
-
 public class OrdineEvaso extends Order {
     private int orderId;
     private String orderType;
-    private LocalDateTime timestamp;
+    private long timestamp;
 
-    public OrdineEvaso(int orderId, OType type, String orderType, int size, int price, LocalDateTime timestamp) {
+    public OrdineEvaso(int orderId, OType type, String orderType, int size, int price, long timestamp) {
         super(type, size, price);
         this.orderId = orderId;
         this.orderType = orderType;
@@ -32,7 +30,7 @@ public class OrdineEvaso extends Order {
 
 
 
-    public LocalDateTime getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
@@ -46,7 +44,7 @@ public class OrdineEvaso extends Order {
            ", data=" + getTimestamp()+ "}\n";
 }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 

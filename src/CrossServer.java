@@ -247,7 +247,7 @@ public class CrossServer implements Runnable {
                     } else {
                         String values = gson.toJson(r.getValues());
                         CancelOrderRequest orderid = gson.fromJson(values, CancelOrderRequest.class);
-                        int code = orderBook.cancelOrder(orderid.getOrderId());
+                        int code = orderBook.cancelOrder(orderid.getOrderId(),utente.getUsername());
                         if (code == 1) {
                             risposta = new AutResponse(100,
                                     "OK");
@@ -269,10 +269,7 @@ public class CrossServer implements Runnable {
                     
                     String values = gson.toJson(r.getValues());
                     GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);
-                    oHistory.filtraPerMese(request.getMonth());
-
-                    //da finire 
-                    
+                    OrderHistoryResponse risposta = oHistory.filtraPerMese(request.getMonth());
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
                 }

@@ -4,10 +4,8 @@ import java.io.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonArray;
@@ -53,11 +51,7 @@ public class OrderHistory {
 
                 long timestampInt = tradeJsonObject.get("timestamp").getAsLong();
 
-                LocalDateTime dateTime = Instant.ofEpochSecond(timestampInt)
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime();
-
-                OrdineEvaso trade = new OrdineEvaso(orderId, otype, orderType, size, price, dateTime);
+                OrdineEvaso trade = new OrdineEvaso(orderId, otype, orderType, size, price, timestampInt);
                 ordiniEvasi.put(trade.getOrderId(), trade);
             }
         } catch (FileNotFoundException e) {
@@ -75,56 +69,61 @@ public class OrderHistory {
         }
     }
 
-    public String filtraPerMese(String stringa) {
+    public OrderHistoryResponse filtraPerMese(String stringa) {
 
         // parser dell'input
-        String[] my = stringa.split("/");
-        int month = Integer.parseInt(my[0]);
-        int year = Integer.parseInt(my[1]);
+        int month = Integer.parseInt(stringa.substring(0, 2));
+        int year = Integer.parseInt(stringa.substring(2, 6));
+        System.out.println(month + " " + year);
 
         // crea lista filtrata
         LinkedList<OrdineEvaso> ordiniEvasiFiltrati = new LinkedList<>();
 
         // filtriamo per mese e anno
         for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
-            if (entry.getValue().getTimestamp().getMonthValue() == month &&
-                    entry.getValue().getTimestamp().getYear() == year) {
-                    ordiniEvasiFiltrati.add(entry.getValue());
+            
+            //Si esegua il parser del timestamp 
+            Long inttimestamp = entry.getValue().getTimestamp();         
+            LocalDateTime datetime = Instant.ofEpochSecond(inttimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+
+            //controlliamo se è un elemento da filtrarte in base all' input stringa
+            if (datetime.getMonthValue() == month &&
+                    datetime.getYear() == year) {
+                ordiniEvasiFiltrati.add(entry.getValue());
             }
         }
 
-        
-        return
-            "ordine di apertura: " + ordiniEvasiFiltrati.getFirst()
-        +   "\nordine di chiusura: " + ordiniEvasiFiltrati.getLast()
-        +   "\nprezzo massimo" +  OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati)
-        +   "\nprezzo minimo" + OrderHistory.trovaMinOrd(ordiniEvasiFiltrati);
+        // ritorna l'oggetto OrderHistoryResponse per la risposta all utente
+        return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst(), ordiniEvasiFiltrati.getLast(),
+                OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati));
+
     }
 
-    public static OrdineEvaso trovaMaxOrd(LinkedList<OrdineEvaso> ordiniEvasiFiltrati){
+    public static OrdineEvaso trovaMaxOrd(LinkedList<OrdineEvaso> ordiniEvasiFiltrati) {
         OrdineEvaso maxOrdine = null;
-        for(OrdineEvaso ordine: ordiniEvasiFiltrati){
-            if(maxOrdine == null){
+        for (OrdineEvaso ordine : ordiniEvasiFiltrati) {
+            if (maxOrdine == null) {
                 maxOrdine = ordine;
-            }else{
-                if(Math.max(maxOrdine.getPrice(), ordine.getPrice()) == ordine.getPrice())
+            } else {
+                if (Math.max(maxOrdine.getPrice(), ordine.getPrice()) == ordine.getPrice())
                     maxOrdine = ordine;
             }
         }
         return maxOrdine;
     }
 
-        public static OrdineEvaso trovaMinOrd(LinkedList<OrdineEvaso> ordiniEvasiFiltrati){
+    public static OrdineEvaso trovaMinOrd(LinkedList<OrdineEvaso> ordiniEvasiFiltrati) {
         OrdineEvaso minOrdine = null;
-        for(OrdineEvaso ordine: ordiniEvasiFiltrati){
-            if(minOrdine == null){
+        for (OrdineEvaso ordine : ordiniEvasiFiltrati) {
+            if (minOrdine == null) {
                 minOrdine = ordine;
-            }else{
-                if(Math.min(minOrdine.getPrice(), ordine.getPrice()) == ordine.getPrice())
+            } else {
+                if (Math.min(minOrdine.getPrice(), ordine.getPrice()) == ordine.getPrice())
                     minOrdine = ordine;
             }
         }
         return minOrdine;
     }
-
 }

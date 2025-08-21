@@ -200,8 +200,8 @@ public class OrderBook {
     }
 
     //funzione per cancellare un ordine dall'orderbook o dalla lista stop order poichè non sono evasi
-    public int cancelOrder(int orderId){
-        return EvaluatingOrder.cancelEvaluatingOrder(orderId, this);
+    public int cancelOrder(int orderId, String username){
+        return EvaluatingOrder.cancelEvaluatingOrder(orderId, this, username);
     }
 
     public List<EvaluatingOrder> getStopOrders() {

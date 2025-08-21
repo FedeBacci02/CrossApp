@@ -21,7 +21,7 @@ public class ServerMain {
         //carica Ordini storici
         OrderHistory oHistory = new OrderHistory();
         oHistory.loadOrdersFromFile("resources/storicoOrdini.json");
-        System.out.println(oHistory.filtraPerMese("10/2024"));
+        System.out.println(oHistory.filtraPerMese("102024").toString());
 
         //OrderBook
         OrderBook orderbook = new OrderBook();

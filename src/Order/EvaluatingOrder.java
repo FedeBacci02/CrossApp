@@ -27,12 +27,13 @@ public class EvaluatingOrder extends Order {
     }
     
     //cancella un ordine da valutare nell'orderbook
-    public static int cancelEvaluatingOrder(int orderId, OrderBook orderBook) {
+    public static int cancelEvaluatingOrder(int orderId, OrderBook orderBook, String username) {
 
         //cerca e nel caso cancella dalla lista degli stop order
         Iterator<EvaluatingOrder> iterator = orderBook.getStopOrders().iterator();
         if (iterator.hasNext()) {
-            if (iterator.next().getOrderId() == orderId) {
+            EvaluatingOrder order =iterator.next();
+            if (order.getOrderId() == orderId && order.getUsername() == username) {
                 iterator.remove();
                 return 1;
             }
@@ -41,7 +42,7 @@ public class EvaluatingOrder extends Order {
         //cerca e nel caso cancella dall book degli ask
         for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
             for (EvaluatingOrder ordine : entry.getValue()) {
-                if (ordine.getOrderId() == orderId){
+                if (ordine.getOrderId() == orderId && ordine.getUsername() == username){
                     entry.getValue().remove(ordine);
                     if(entry.getValue().isEmpty())
                         orderBook.getAskBook().remove(entry.getKey());
@@ -53,7 +54,7 @@ public class EvaluatingOrder extends Order {
         //cerca e nel caso cancella dall book degli bid
         for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : orderBook.getAskBook().entrySet()) {
             for (EvaluatingOrder ordine : entry.getValue()) {
-                if (ordine.getOrderId() == orderId){
+                if (ordine.getOrderId() == orderId && ordine.getUsername() == username){
                     entry.getValue().remove(ordine);
                     return 1;
                 }
