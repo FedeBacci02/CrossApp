@@ -8,6 +8,7 @@ import org.fusesource.jansi.Ansi;
 import com.google.gson.Gson;
 
 import Order.*;
+import Utenti.User;
 
 public class CancelOrder implements ComandoStrategy{
 

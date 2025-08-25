@@ -22,12 +22,12 @@ public class Prop {
     }
 
     public String get(String key) {
-        System.out.println(properties.getProperty(key));
+        //System.out.println(properties.getProperty(key));
         return properties.getProperty(key);
     }
 
     public int getInt(String key) {
-        System.out.println(properties.getProperty(key));
+        //System.out.println(properties.getProperty(key));
         return Integer.parseInt(properties.getProperty(key));
     }
 }

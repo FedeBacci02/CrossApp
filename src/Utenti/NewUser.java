@@ -1,3 +1,4 @@
+package Utenti;
 public class NewUser extends User {
     private String oldPassword;
 

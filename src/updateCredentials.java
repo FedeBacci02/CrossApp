@@ -5,6 +5,9 @@ import org.fusesource.jansi.Ansi;
 
 import com.google.gson.Gson;
 
+import Utenti.NewUser;
+import Utenti.User;
+
 public class updateCredentials implements ComandoStrategy {
 
     private User utenteCorrente;

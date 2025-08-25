@@ -7,6 +7,8 @@ import org.fusesource.jansi.Ansi;
 
 import com.google.gson.Gson;
 
+import Utenti.User;
+
 public class Logout implements ComandoStrategy {
 
     private User utenteCorrente;

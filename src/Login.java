@@ -6,6 +6,8 @@ import java.io.*;
 
 import com.google.gson.Gson;
 
+import Utenti.User;
+
 public class Login implements ComandoStrategy {
 
     private User utenteCorrente;

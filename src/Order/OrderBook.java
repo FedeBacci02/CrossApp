@@ -5,9 +5,14 @@ import java.util.*;
 import org.fusesource.jansi.Ansi;
 
 public class OrderBook {
+    
+    //struttura dati usata per il lato ask
     TreeMap<Integer, LinkedList<EvaluatingOrder>> askBook; // Chiave: "price" Values: "Order"
-    TreeMap<Integer, LinkedList<EvaluatingOrder>> bidBook;
 
+    //struttura dati usata per il lato bid
+    TreeMap<Integer, LinkedList<EvaluatingOrder>> bidBook; // Chiave: "price" Values: "Order"
+
+    //struttura dati utilizzata per la gestione degli stop orders
     List<EvaluatingOrder> stopOrders;
 
     public OrderBook() {
@@ -15,11 +20,6 @@ public class OrderBook {
         stopOrders = new LinkedList<>();
         askBook = new TreeMap<>();
         bidBook = new TreeMap<>(Comparator.reverseOrder());
-
-        System.out.println("Check ordine bidBook:");
-        for (Integer prezzo : bidBook.keySet()) {
-            System.out.println(prezzo);
-        }
 
     }
 
@@ -129,7 +129,7 @@ public class OrderBook {
 
     }
 
-    public void stopOrderMatch() {
+    public synchronized void stopOrderMatch() {
 
         Iterator<EvaluatingOrder> iterator = stopOrders.iterator();
         OrderStrategy strategy = new MarketOrder();
@@ -180,12 +180,26 @@ public class OrderBook {
 
                 // Rimuovi ordini completati
                 if (bidOrder.getSize() == 0) {
+                    System.out.println(
+                            "[+]" + bidOrder.getOrderId() + " di " + bidOrder.getUsername() + " è stato completato");
+
+                    // invio della notifica all'utente interessato
+                    OrdineEvaso ordineEvaso = bidOrder.evadiOrdine();
+                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    notifica.inviaOrdine(bidOrder.getUtente());
+
                     bidQueue.poll();
                     if (bidQueue.isEmpty()) {
                         bidBook.remove(highestBidPrice);
                     }
                 }
                 if (askOrder.getSize() == 0) {
+                    System.out.println(
+                            "[+]" + askOrder.getOrderId() + " di " + askOrder.getUsername() + " è stato completato");
+                    OrdineEvaso ordineEvaso = askOrder.evadiOrdine();
+                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    notifica.inviaOrdine(askOrder.getUtente());
+
                     askQueue.poll();
                     if (askQueue.isEmpty()) {
                         askBook.remove(lowestAskPrice);
@@ -199,8 +213,9 @@ public class OrderBook {
         }
     }
 
-    //funzione per cancellare un ordine dall'orderbook o dalla lista stop order poichè non sono evasi
-    public int cancelOrder(int orderId, String username){
+    // funzione per cancellare un ordine dall'orderbook o dalla lista stop order
+    // poichè non sono evasi
+    public int cancelOrder(int orderId, String username) {
         return EvaluatingOrder.cancelEvaluatingOrder(orderId, this, username);
     }
 

@@ -10,9 +10,9 @@ public class LimitOrder implements OrderStrategy{
         //iterazione dello stop order (poichè deve fare come un market)
         orderBook.stopOrderMatch();
 
-        //iterazione dell'algoritmo di matching
+        //iterazione dell'algoritmo di matching (successivo al controllo degli stop poichè devono essere eseguiti subito)
         orderBook.matchLimitOrders();
-
+        
         return 1;
     }
 

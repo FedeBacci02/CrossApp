@@ -3,20 +3,24 @@ package Order;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import Utenti.*;
+
 
 public class EvaluatingOrder extends Order {
 
     private int orderId;
     private String username;
+    private UserConnected utente;
     private String orderType;
 
     // Costruttore standard
     public EvaluatingOrder(OType type, int size, int price, String username, int orderId, int timestamp,
-            String orderType) {
+            String orderType,UserConnected utente) {
         super(type, size, price);
         this.orderId = orderId;
         this.username = username;
         this.orderType = orderType;
+        this.utente=utente;
     }
 
     // Costruttore di copia (deep copy)
@@ -24,6 +28,7 @@ public class EvaluatingOrder extends Order {
         super(other); // chiama il costruttore di copia di Order
         this.orderId = other.orderId;
         this.username = other.username;
+        this.utente=other.utente;
     }
     
     //cancella un ordine da valutare nell'orderbook
@@ -66,6 +71,12 @@ public class EvaluatingOrder extends Order {
 
     }
 
+    public OrdineEvaso evadiOrdine(){
+        long timestamp = System.currentTimeMillis()/1000;
+        System.out.println(timestamp);
+        return new OrdineEvaso(orderId, getType(), orderType,getSize(), getPrice(),timestamp);
+    }
+
     public int getOrderId() {
         return orderId;
     }
@@ -89,4 +100,14 @@ public class EvaluatingOrder extends Order {
     public void setOrderType(String orderType) {
         this.orderType = orderType;
     }
+
+    public UserConnected getUtente() {
+        return utente;
+    }
+
+    public void setUtente(UserConnected utente) {
+        this.utente = utente;
+    }
+
+    
 }

@@ -6,6 +6,8 @@ import org.fusesource.jansi.Ansi;
 import com.google.gson.*;
 //import java.io.*;
 
+import Utenti.User;
+
 public class Register implements ComandoStrategy {
 
     private User utenteCorrente;
@@ -37,9 +39,7 @@ public class Register implements ComandoStrategy {
             
             //output al client
             AutResponse response = AutResponse.desMessage(jsonResponse);
-            if(response.getCode() == 100)
-                utenteCorrente = utente;
-
+    
             System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
 
         } catch (Exception e) {

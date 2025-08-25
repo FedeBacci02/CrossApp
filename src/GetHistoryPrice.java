@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import Order.GetPriceHistoryRequest;
 import Order.OrderHistoryResponse;
+import Utenti.User;
 
 public class GetHistoryPrice implements ComandoStrategy {
 

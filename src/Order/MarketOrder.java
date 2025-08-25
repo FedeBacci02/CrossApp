@@ -17,6 +17,8 @@ public class MarketOrder implements OrderStrategy {
         backupBook.visualizzaOrderBook(); // Stampa backup
 
         List<Integer> daRimuovere = new ArrayList<>();
+        LinkedList<EvaluatingOrder> daNotificare = new LinkedList<>();
+
         int size = order.getSize();
         switch (order.getType()) {
             case ASK:
@@ -32,6 +34,7 @@ public class MarketOrder implements OrderStrategy {
                         if (size - ordine.getSize() >= 0) {
                             size = size - ordine.getSize();
                             System.out.println("[+] OK2");
+                            daNotificare.add(ordine);
                             entry.getValue().remove();
                         } else {
                             // size < 0
@@ -42,7 +45,8 @@ public class MarketOrder implements OrderStrategy {
                         }
                     }
 
-                    // controlliamo se la lista è vuota e aggiungiamo la chiave da rimuovere in lista
+                    // controlliamo se la lista è vuota e aggiungiamo la chiave da rimuovere in
+                    // lista
                     if (entry.getValue().isEmpty())
                         daRimuovere.add(entry.getKey());
                 }
@@ -66,6 +70,11 @@ public class MarketOrder implements OrderStrategy {
                 } else {
                     // ordine soddisfatto
                     System.out.println("[+] OK");
+
+                    OrdineEvaso ordineEvaso = order.evadiOrdine();
+                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    notifica.inviaOrdine(order.getUtente());
+
                     return 1;
                 }
             case BID:
@@ -81,6 +90,9 @@ public class MarketOrder implements OrderStrategy {
                         if (size - ordine.getSize() >= 0) {
                             size = size - ordine.getSize();
                             System.out.println("[+] OK2");
+
+                            daNotificare.add(ordine);
+
                             entry.getValue().remove();
                         } else {
                             // size < 0
@@ -115,6 +127,11 @@ public class MarketOrder implements OrderStrategy {
                 } else {
                     // ordine soddisfatto
                     System.out.println("[+] OK");
+
+                    OrdineEvaso ordineEvaso = order.evadiOrdine();
+                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    notifica.inviaOrdine(order.getUtente());
+
                     return 1;
                 }
             default:

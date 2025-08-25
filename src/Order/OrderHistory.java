@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonArray;
@@ -18,6 +19,21 @@ public class OrderHistory {
 
     public OrderHistory() {
         ordiniEvasi = new ConcurrentHashMap<>();
+    }
+
+    //ritorna l'ultimo elemento in lista
+    public OrdineEvaso getLast() {
+        if (ordiniEvasi.isEmpty()) {
+            throw new NoSuchElementException("Err - Non sono presenti dati storici di ordini evasi");
+        }
+
+        OrdineEvaso lastEntry = null;
+
+        for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
+            lastEntry = entry.getValue();
+        }
+
+        return lastEntry;
     }
 
     public void loadOrdersFromFile(String jsonFileName) {
@@ -81,14 +97,14 @@ public class OrderHistory {
 
         // filtriamo per mese e anno
         for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
-            
-            //Si esegua il parser del timestamp 
-            Long inttimestamp = entry.getValue().getTimestamp();         
+
+            // Si esegua il parser del timestamp
+            Long inttimestamp = entry.getValue().getTimestamp();
             LocalDateTime datetime = Instant.ofEpochSecond(inttimestamp)
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime();
 
-            //controlliamo se è un elemento da filtrarte in base all' input stringa
+            // controlliamo se è un elemento da filtrarte in base all' input stringa
             if (datetime.getMonthValue() == month &&
                     datetime.getYear() == year) {
                 ordiniEvasiFiltrati.add(entry.getValue());

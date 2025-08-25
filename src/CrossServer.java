@@ -9,6 +9,9 @@ import org.fusesource.jansi.Ansi;
 import com.google.gson.*;
 
 import Order.*;
+import Utenti.NewUser;
+import Utenti.User;
+import Utenti.UserConnected;
 
 import java.io.*;
 
@@ -19,13 +22,16 @@ public class CrossServer implements Runnable {
     private UserConnected utente = null;
     OrderBook orderBook = null;
     AtomicInteger newid;
+    int port;
 
-    public CrossServer(Socket socket, ConcurrentHashMap<String, UserConnected> users, OrderBook orderBook, AtomicInteger newid, OrderHistory oHistory) {
+    public CrossServer(Socket socket, ConcurrentHashMap<String, UserConnected> users, OrderBook orderBook,
+            AtomicInteger newid, OrderHistory oHistory) {
         this.socket = socket;
         this.users = users;
         this.orderBook = orderBook;
         this.newid = newid;
         this.oHistory = oHistory;
+
     }
 
     public void run() {
@@ -41,6 +47,13 @@ public class CrossServer implements Runnable {
                 String jsonRequest = in.nextLine();
                 Request r = gson.fromJson(jsonRequest, Request.class);
                 System.out.println(Ansi.ansi().fg(Ansi.Color.BLUE).a("[+] " + r.toString()).reset());
+
+                if (r.getOperation().equals("start")) {
+                    String values = gson.toJson(r.getValues());
+                    RegistrationMessage rm = gson.fromJson(values, RegistrationMessage.class);
+                    port = rm.getUdpPort();
+                    System.out.println(port);
+                }
 
                 if (r.getOperation().equals("register")) {
                     // estraiamo l'utente
@@ -66,16 +79,15 @@ public class CrossServer implements Runnable {
                         out.println(jsonResponse);
                     } else {
                         // registrazione completata
-                        utente = newUtente;
-                        utente.setStatus("online");
                         AutResponse risposta = new AutResponse(100, "OK");
                         String jsonResponse = gson.toJson(risposta);
-                        users.put(utente.getUsername(), utente); // la chiave è l'username poichè è univoca
-                        System.out.println("[+] " + utente.getUsername() + " registration is successful !");
+                        users.put(newUtente.getUsername(), newUtente); // la chiave è l'username poichè è univoca
+                        System.out.println("[+] " + newUtente.getUsername() + " registration is successful !");
                         out.println(jsonResponse);
                     }
                 }
 
+                // esegue l'accesso al server con un userna
                 if (r.getOperation().equals("login")) {
                     String values = gson.toJson(r.getValues());
                     User userToConnect = gson.fromJson(values, User.class);
@@ -92,7 +104,7 @@ public class CrossServer implements Runnable {
                                     out.println(jsonResponse);
                                 } else {
                                     utente = newUtente;
-                                    utente.setStatus("online");
+                                    utente.toOnline(socket, port);
                                     users.put(utente.getUsername(), utente);
                                     AutResponse risposta = new AutResponse(100, "OK");
                                     String jsonResponse = gson.toJson(risposta);
@@ -117,6 +129,7 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                // fare il logout dell'utente
                 if (r.getOperation().equals("logout")) {
                     if (utente == null) {
                         AutResponse risposta = new AutResponse(101,
@@ -134,6 +147,7 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                // aggiormaneto delle credenziali di accesso
                 if (r.getOperation().equals("updateCredentials")) {
                     String values = gson.toJson(r.getValues());
                     NewUser newUtente = gson.fromJson(values, NewUser.class);
@@ -141,7 +155,7 @@ public class CrossServer implements Runnable {
                             "[+] " + newUtente.getUsername() + " is trying to uddate credentials in the server");
 
                     if (users.containsKey(newUtente.getUsername())) {
-                        if (!(utente == null)) {
+                        if (!(utente == null) || (users.get(newUtente.getUsername()).getStatus() == "online")) {
                             System.out.println("[+]Error: User currently logged");
 
                             AutResponse risposta = new AutResponse(104,
@@ -178,8 +192,11 @@ public class CrossServer implements Runnable {
                                             + newUtente.getUsername())
                                     .reset());
 
-                            System.out.println("    " + users.get(newUtente.getUsername()).getPassword() + " == "
-                                    + newUtente.getOldPassword());
+                            /*
+                             * System.out.println("    " + users.get(newUtente.getUsername()).getPassword()
+                             * + " == "
+                             * + newUtente.getOldPassword());
+                             */
 
                             AutResponse risposta = new AutResponse(102,
                                     "username/old password mismatch or non existent username");
@@ -213,7 +230,7 @@ public class CrossServer implements Runnable {
                         // creiamo oggetto ordine da valutare
                         EvaluatingOrder ordine = new EvaluatingOrder(newOrder.getType(), newOrder.getSize(),
                                 newOrder.getPrice(), utente.getUsername(), newid.incrementAndGet(), 0,
-                                r.getOperation());
+                                r.getOperation(), utente);
 
                         // creazione oggetto context
                         OrderContext orderContext = new OrderContext(ordine, orderBook);
@@ -229,17 +246,19 @@ public class CrossServer implements Runnable {
                             OrdResponse risposta = new OrdResponse(code);
                             String jsonResponse = gson.toJson(risposta);
                             out.println(jsonResponse);
+                        } else {
+                            OrdResponse risposta = new OrdResponse(ordine.getOrderId());
+                            String jsonResponse = gson.toJson(risposta);
+                            out.println(jsonResponse);
                         }
-                        OrdResponse risposta = new OrdResponse(ordine.getOrderId());
-                        String jsonResponse = gson.toJson(risposta);
-                        out.println(jsonResponse);
                     }
                 }
 
                 if (r.getOperation().equals("cancelorder")) {
 
                     AutResponse risposta;
-                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " tenta di cancellare un ordine ").reset());
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN)
+                            .a("[+] " + utente + " tenta di cancellare un ordine ").reset());
                     if (utente == null) {
                         // risposta
                         risposta = new AutResponse(102,
@@ -247,26 +266,27 @@ public class CrossServer implements Runnable {
                     } else {
                         String values = gson.toJson(r.getValues());
                         CancelOrderRequest orderid = gson.fromJson(values, CancelOrderRequest.class);
-                        int code = orderBook.cancelOrder(orderid.getOrderId(),utente.getUsername());
+                        int code = orderBook.cancelOrder(orderid.getOrderId(), utente.getUsername());
                         if (code == 1) {
                             risposta = new AutResponse(100,
                                     "OK");
-                            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " ordine cancellato con successo ").reset());
+                            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN)
+                                    .a("[+] " + utente + " ordine cancellato con successo ").reset());
                         } else {
                             risposta = new AutResponse(101,
                                     "order does not exist");
-                            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] "+ utente + " errore ").reset());
+                            System.out
+                                    .println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] " + utente + " errore ").reset());
                         }
 
                     }
-
 
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
                 }
 
                 if (r.getOperation().equals("getpricehistory")) {
-                    
+
                     String values = gson.toJson(r.getValues());
                     GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);
                     OrderHistoryResponse risposta = oHistory.filtraPerMese(request.getMonth());
@@ -276,9 +296,11 @@ public class CrossServer implements Runnable {
 
                 // output di eventuali aggiornamenti a schermo per controlli
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update user register: ").reset());
-                for(Map.Entry<String,UserConnected> entry : users.entrySet()){
+                for (Map.Entry<String, UserConnected> entry : users.entrySet()) {
                     System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a(entry.getValue().toString()).reset());
                 }
+
+                // output dello stato attuale dell'orderbook
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update order book: ").reset());
                 orderBook.visualizzaOrderBook();
 
