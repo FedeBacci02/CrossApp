@@ -233,7 +233,7 @@ public class CrossServer implements Runnable {
                                 r.getOperation(), utente);
 
                         // creazione oggetto context
-                        OrderContext orderContext = new OrderContext(ordine, orderBook);
+                        OrderContext orderContext = new OrderContext(ordine, orderBook, oHistory);
 
                         // seleziona la strategia da applicare
                         orderContext.setStrategy(ordine.getOrderType());

@@ -28,6 +28,10 @@ public class ServerMain {
         oHistory.loadOrdersFromFile("resources/storicoOrdini.json");
         // System.out.println(oHistory.filtraPerMese("102024").toString());
 
+        //thread per persistere i dati ogni 2 min
+        ExecutorService saveService = Executors.newSingleThreadExecutor();
+        saveService.submit(new SalvataggioDati(oHistory,users,config.getInt("timer")));
+
         // OrderBook
         OrderBook orderbook = new OrderBook();
         orderbook.visualizzaOrderBook();
@@ -39,7 +43,8 @@ public class ServerMain {
         // caricamento degl'utenti registrati
         File input = new File("resources/users.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
-        JsonArray jsonArrayOfUsers = fileElement.getAsJsonArray();
+        JsonObject jsonUsers = fileElement.getAsJsonObject();
+        JsonArray jsonArrayOfUsers = jsonUsers.get("users").getAsJsonArray();
 
         for (JsonElement user : jsonArrayOfUsers) {
             JsonObject userJsonObject = user.getAsJsonObject();

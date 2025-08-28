@@ -4,7 +4,7 @@ import java.util.*;
 
 public class MarketOrder implements OrderStrategy {
 
-    public int esegui(EvaluatingOrder order, OrderBook orderBook) {
+    public int esegui(EvaluatingOrder order, OrderBook orderBook, OrderHistory oHistory) {
         // algotitmo di matching per market order.esegue subito o restituisce errore
         System.out.println("[+] MarketOrder execution");
 
@@ -72,6 +72,7 @@ public class MarketOrder implements OrderStrategy {
                     System.out.println("[+] OK");
 
                     OrdineEvaso ordineEvaso = order.evadiOrdine();
+                    oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
                     notifica.inviaOrdine(order.getUtente());
 
@@ -130,6 +131,7 @@ public class MarketOrder implements OrderStrategy {
 
                     OrdineEvaso ordineEvaso = order.evadiOrdine();
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    oHistory.getOrdiniEvasi().put(order.getOrderId(), ordineEvaso);
                     notifica.inviaOrdine(order.getUtente());
 
                     return 1;

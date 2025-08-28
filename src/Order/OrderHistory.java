@@ -13,15 +13,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
 
 public class OrderHistory {
-    ConcurrentHashMap<Integer, OrdineEvaso> ordiniEvasi;
+    private ConcurrentHashMap<Integer, OrdineEvaso> ordiniEvasi;
 
     public OrderHistory() {
         ordiniEvasi = new ConcurrentHashMap<>();
     }
 
-    //ritorna l'ultimo elemento in lista
+    public ConcurrentHashMap<Integer, OrdineEvaso> getOrdiniEvasi() {
+        return ordiniEvasi;
+    }
+
+    // ritorna l'ultimo elemento in lista
     public OrdineEvaso getLast() {
         if (ordiniEvasi.isEmpty()) {
             throw new NoSuchElementException("Err - Non sono presenti dati storici di ordini evasi");
@@ -34,6 +39,40 @@ public class OrderHistory {
         }
 
         return lastEntry;
+    }
+
+    public void saveHistory(String fileName) {
+        JsonWriter writer;
+
+        try {
+            writer = new JsonWriter(new FileWriter(fileName));
+            writer.setIndent("  "); // per indentare
+
+            writer.beginObject();
+            writer.name("trades");
+            writer.beginArray();
+            for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
+                writer.beginObject();
+                writer.name("orderId").value(entry.getValue().getOrderId());
+                String type;
+                if(entry.getValue().getType()==OType.ASK)
+                    type="ask";
+                else 
+                    type="bid";
+
+                writer.name("type").value(type);
+                writer.name("orderType").value(entry.getValue().getOrderType());
+                writer.name("size").value(entry.getValue().getSize());
+                writer.name("price").value(entry.getValue().getPrice());
+                writer.name("timestamp").value(entry.getValue().getTimestamp());
+                writer.endObject();
+            }
+            writer.endArray();
+            writer.endObject();
+            writer.close();
+        } catch (IOException e) {
+            System.err.print(e.getMessage());
+        }
     }
 
     public void loadOrdersFromFile(String jsonFileName) {

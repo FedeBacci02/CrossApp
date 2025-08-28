@@ -32,7 +32,7 @@ public class ClientMain {
         boolean end = false;
 
         // titolo della schermata principale
-        // ClearScreen.clearScreen();
+        ClearScreen.clearScreen();  //server solo a pulire lo schermo
         System.out.println(Ansi.ansi().fgYellow().a("CROSS: an exChange oRder bOokS Service").reset());
 
         // gestione della comunicazione col server

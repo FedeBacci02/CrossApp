@@ -20,7 +20,6 @@ public class OrderBook {
         stopOrders = new LinkedList<>();
         askBook = new TreeMap<>();
         bidBook = new TreeMap<>(Comparator.reverseOrder());
-
     }
 
     public synchronized void limitOrderInsert(EvaluatingOrder o) {
@@ -129,7 +128,7 @@ public class OrderBook {
 
     }
 
-    public synchronized void stopOrderMatch() {
+    public synchronized void stopOrderMatch(OrderHistory oHistory) {
 
         Iterator<EvaluatingOrder> iterator = stopOrders.iterator();
         OrderStrategy strategy = new MarketOrder();
@@ -139,11 +138,11 @@ public class OrderBook {
             switch (ordine.getType()) {
                 case BID:
                     if (ordine.getPrice() >= askBook.firstKey())
-                        strategy.esegui(ordine, this);
+                        strategy.esegui(ordine, this,oHistory );
                     break;
                 case ASK:
                     if (ordine.getPrice() <= bidBook.firstKey())
-                        strategy.esegui(ordine, this);
+                        strategy.esegui(ordine, this, oHistory);
                     break;
                 default:
                     break;
@@ -151,7 +150,7 @@ public class OrderBook {
         }
     }
 
-    public synchronized void matchLimitOrders() {
+    public synchronized void matchLimitOrders(OrderHistory oHistory) {
         // Finché ci sono bid e ask da matchare
         while (!bidBook.isEmpty() && !askBook.isEmpty()) {
             int highestBidPrice = bidBook.firstKey(); // Bid più alto
@@ -185,6 +184,7 @@ public class OrderBook {
 
                     // invio della notifica all'utente interessato
                     OrdineEvaso ordineEvaso = bidOrder.evadiOrdine();
+                    oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
                     notifica.inviaOrdine(bidOrder.getUtente());
 
@@ -197,6 +197,7 @@ public class OrderBook {
                     System.out.println(
                             "[+]" + askOrder.getOrderId() + " di " + askOrder.getUsername() + " è stato completato");
                     OrdineEvaso ordineEvaso = askOrder.evadiOrdine();
+                    oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
                     notifica.inviaOrdine(askOrder.getUtente());
 

@@ -1,13 +1,24 @@
-[
+{
+  "users": [
     {
-        "username": "Fede02",
-        "password": "1234",
-        "status": "offline"
+      "username": "Fede02",
+      "password": "1234",
+      "status": "offline"
     },
-    
     {
-        "username": "Poveros03",
-        "password": "5678",
-        "status": "offline"
-    }   
-]
+      "username": "Poveros03",
+      "password": "5678",
+      "status": "online"
+    },
+    {
+      "username": "PoveroCiccio03",
+      "password": "12345",
+      "status": "offline"
+    },
+    {
+      "username": "Dotto00",
+      "password": "1234",
+      "status": "offline"
+    }
+  ]
+}

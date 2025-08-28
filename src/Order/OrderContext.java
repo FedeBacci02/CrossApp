@@ -7,12 +7,14 @@ public class OrderContext {
     private OrderStrategy strategy;     //tipo di ordine
     private EvaluatingOrder order;      //type(BID/ASK),price e size 
     private OrderBook orderBook;        //orderbook di riferimento
+    private OrderHistory oHistory;
 
     public static final Map<String, OrderStrategy> strategie = new HashMap<>();
 
-    public OrderContext(EvaluatingOrder order, OrderBook orderBook) {
+    public OrderContext(EvaluatingOrder order, OrderBook orderBook, OrderHistory oHistory) {
         this.order = order;
         this.orderBook = orderBook;
+        this.oHistory = oHistory;
 
         strategie.put("insertlimitorder", new LimitOrder());
         strategie.put("insertmarketorder", new MarketOrder());
@@ -30,7 +32,7 @@ public class OrderContext {
     }
 
     public int elaboraOrdine() {
-        return strategy.esegui(this.order, this.orderBook);
+        return strategy.esegui(this.order, this.orderBook, this.oHistory);
     }
 
     public OrderStrategy getStrategy() {
