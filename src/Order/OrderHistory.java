@@ -4,6 +4,7 @@ import java.io.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -28,13 +29,18 @@ public class OrderHistory {
 
     // ritorna l'ultimo elemento in lista
     public OrdineEvaso getLast() {
-        if (ordiniEvasi.isEmpty()) {
+
+        // Creiamo una copia 
+        Map<Integer, OrdineEvaso> copiaOrdiniEvasi = new HashMap<>(ordiniEvasi);
+
+        if (copiaOrdiniEvasi.isEmpty()) {
             throw new NoSuchElementException("Err - Non sono presenti dati storici di ordini evasi");
         }
 
         OrdineEvaso lastEntry = null;
 
-        for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
+        // Iteriamo sulla copia
+        for (Map.Entry<Integer, OrdineEvaso> entry : copiaOrdiniEvasi.entrySet()) {
             lastEntry = entry.getValue();
         }
 
@@ -55,10 +61,10 @@ public class OrderHistory {
                 writer.beginObject();
                 writer.name("orderId").value(entry.getValue().getOrderId());
                 String type;
-                if(entry.getValue().getType()==OType.ASK)
-                    type="ask";
-                else 
-                    type="bid";
+                if (entry.getValue().getType() == OType.ASK)
+                    type = "ask";
+                else
+                    type = "bid";
 
                 writer.name("type").value(type);
                 writer.name("orderType").value(entry.getValue().getOrderType());
@@ -126,6 +132,9 @@ public class OrderHistory {
 
     public OrderHistoryResponse filtraPerMese(String stringa) {
 
+        //creiamo una
+        Map<Integer, OrdineEvaso> copiaOrdiniEvasi = new HashMap<>(ordiniEvasi);
+
         // parser dell'input
         int month = Integer.parseInt(stringa.substring(0, 2));
         int year = Integer.parseInt(stringa.substring(2, 6));
@@ -135,7 +144,7 @@ public class OrderHistory {
         LinkedList<OrdineEvaso> ordiniEvasiFiltrati = new LinkedList<>();
 
         // filtriamo per mese e anno
-        for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
+        for (Map.Entry<Integer, OrdineEvaso> entry : copiaOrdiniEvasi.entrySet()) {
 
             // Si esegua il parser del timestamp
             Long inttimestamp = entry.getValue().getTimestamp();
@@ -151,8 +160,13 @@ public class OrderHistory {
         }
 
         // ritorna l'oggetto OrderHistoryResponse per la risposta all utente
-        return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst(), ordiniEvasiFiltrati.getLast(),
-                OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati));
+        try {
+            return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst(), ordiniEvasiFiltrati.getLast(),
+                    OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati), 100);
+        } catch (NoSuchElementException ex) {
+            System.out.println("[+] Elementi non presenti per il periodo richiesto");
+            return new OrderHistoryResponse(null, null, null, null, 101);
+        }
 
     }
 
@@ -167,6 +181,20 @@ public class OrderHistory {
             }
         }
         return maxOrdine;
+    }
+
+    public int getMaxId() {
+        int maxId = 0; // poichè l'ordine 0 non esiste perchè consideriamo che gl'ordini partino da 1
+        for (Map.Entry<Integer, OrdineEvaso> entry : ordiniEvasi.entrySet()) {
+            if (maxId == 0) {
+                maxId = entry.getKey();
+            } else {
+                if ((Math.max(maxId, entry.getKey()) != maxId))
+                    maxId = entry.getKey();
+            }
+        }
+
+        return maxId;
     }
 
     public static OrdineEvaso trovaMinOrd(LinkedList<OrdineEvaso> ordiniEvasiFiltrati) {

@@ -1,24 +1,32 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+package Client;
+
+import java.io.*;
+import java.net.*;
 
 import org.fusesource.jansi.Ansi;
 
 import com.google.gson.Gson;
 
+import Utenti.NewUser;
 import Utenti.User;
+import Server.AutResponse;
 
-public class Logout implements ComandoStrategy {
+
+public class updateCredentials implements ComandoStrategy {
 
     private User utenteCorrente;
 
-    @Override
     public void esegui(String[] parameters, Socket socket) {
         // System.out.println("Logout's command is executed ..");
 
+        if (parameters.length < 3) {
+            System.out.println("Mancano Username/Password/VecchiaPassword");
+            return;
+        }
+
         Gson gson = new Gson();
-        Request r = new Request("logout", new Object());
+        Request r = new Request("updateCredentials",
+                new NewUser(parameters[2], parameters[1], parameters[3], "offline"));
         String message = gson.toJson(r);
 
         try {

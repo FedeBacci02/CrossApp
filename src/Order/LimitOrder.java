@@ -7,6 +7,7 @@ public class LimitOrder implements OrderStrategy{
         //inserimento del limit order
         orderBook.limitOrderInsert(order);
 
+        //qui in poi vengono attivati prima stop order o poi l'algoritmo per matchare i limit order
         //iterazione dello stop order (poichè deve fare come un market)
         orderBook.stopOrderMatch(oHistory);
 

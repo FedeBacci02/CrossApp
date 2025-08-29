@@ -1,53 +1,61 @@
-import java.io.*;
+package Client;
+
 import java.net.*;
 
 import org.fusesource.jansi.Ansi;
 
-import com.google.gson.*;
-//import java.io.*;
+import java.io.*;
+
+import com.google.gson.Gson;
 
 import Utenti.User;
+import Server.AutResponse;
 
-public class Register implements ComandoStrategy {
+
+public class Login implements ComandoStrategy {
 
     private User utenteCorrente;
 
     public void esegui(String[] parameters, Socket socket) {
-        //System.out.println("Register's command is executed  ..");
+        // System.out.println("Login's command is executed ..");
 
-        if (parameters.length < 2) {
-            System.out.println("Mancano Username/Password");
+        if (parameters.length != 3) {
+            System.out.println("Errore: Mancano Username/Password");
             return;
         }
 
         Gson gson = new Gson();
         User utente = new User(parameters[1], parameters[2]);
-        Request r = new Request("register", utente);
+        Request r = new Request("login", utente);
         String message = gson.toJson(r);
 
         try {
+
+            // inizializzazione delle variabili di stream
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             // invio del messaggio
             out.println(message);
-            //System.out.println("messaggio inviato");
+            // System.out.println("messaggio inviato");
 
             // attesa ricesione
-            //System.out.println("messaggio in attesa");
+            // System.out.println("messaggio in attesa");
             String jsonResponse = in.readLine();
-            
-            //output al client
+
+            // output al client
             AutResponse response = AutResponse.desMessage(jsonResponse);
-    
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
+            if(response.getCode() == 100)
+                utenteCorrente = utente;
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
-    public User getUserCorrente(){
+    public User getUserCorrente() {
         return utenteCorrente;
     }
 }

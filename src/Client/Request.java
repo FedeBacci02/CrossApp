@@ -1,3 +1,5 @@
+package Client;
+
 import com.google.gson.*;
 
 public class Request{

@@ -1,3 +1,5 @@
+package Client;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogoutUserHandler implements Runnable {

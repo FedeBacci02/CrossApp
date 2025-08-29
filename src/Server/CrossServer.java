@@ -1,3 +1,5 @@
+package Server;
+
 import java.net.*;
 import java.util.Map;
 import java.util.Scanner;
@@ -12,6 +14,7 @@ import Order.*;
 import Utenti.NewUser;
 import Utenti.User;
 import Utenti.UserConnected;
+import Client.Request;
 
 import java.io.*;
 
@@ -286,7 +289,6 @@ public class CrossServer implements Runnable {
                 }
 
                 if (r.getOperation().equals("getpricehistory")) {
-
                     String values = gson.toJson(r.getValues());
                     GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);
                     OrderHistoryResponse risposta = oHistory.filtraPerMese(request.getMonth());
@@ -303,6 +305,10 @@ public class CrossServer implements Runnable {
                 // output dello stato attuale dell'orderbook
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update order book: ").reset());
                 orderBook.visualizzaOrderBook();
+
+                // output dello stato attuale della coda degli stop orders
+                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] update stop orders: ").reset());
+                orderBook.visualizzaStopOrders();
 
             }
 

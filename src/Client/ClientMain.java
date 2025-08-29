@@ -1,3 +1,5 @@
+package Client;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -6,6 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.fusesource.jansi.Ansi;
+
+import Properties.Prop;
 
 public class ClientMain {
     public static void main(String[] args) throws IOException {

@@ -1,3 +1,4 @@
+package Server;
 public class RegisterResponse {
 
     private int responde;

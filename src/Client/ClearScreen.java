@@ -1,3 +1,5 @@
+package Client;
+
 public class ClearScreen {
     public static void clearScreen() {
         try {

@@ -21,7 +21,10 @@ public class UserConnected extends User {
 
     public String toString(){
         StringBuilder stringa = new StringBuilder();
-        stringa.append("username= ").append(getUsername()).append(", password= ").append(getPassword()).append(", status= ").append(getStatus());
+        stringa.append("username= ").append(getUsername())
+        .append(", password= ").append(getPassword())
+        .append(", status= ").append(getStatus())
+        .append(", port").append(port);
         return stringa.toString();
     }
 

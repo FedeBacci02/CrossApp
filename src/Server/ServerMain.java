@@ -1,3 +1,4 @@
+package Server;
 import java.net.*;
 import java.io.*;
 import java.util.Map;
@@ -8,6 +9,7 @@ import com.google.gson.*;
 
 import Order.OrderBook;
 import Order.OrderHistory;
+import Properties.Prop;
 import Utenti.UserConnected;
 
 import org.fusesource.jansi.Ansi;
@@ -37,7 +39,7 @@ public class ServerMain {
         orderbook.visualizzaOrderBook();
 
         // orderId inizializzazione
-        AtomicInteger newid = new AtomicInteger(oHistory.getLast().getOrderId());
+        AtomicInteger newid = new AtomicInteger(oHistory.getMaxId());
         System.out.println("order id start value: " + newid.get());
 
         // caricamento degl'utenti registrati
@@ -50,8 +52,7 @@ public class ServerMain {
             JsonObject userJsonObject = user.getAsJsonObject();
             String username = userJsonObject.get("username").getAsString();
             String password = userJsonObject.get("password").getAsString();
-            String status = userJsonObject.get("status").getAsString();
-            users.put(username, new UserConnected(username, password, status));
+            users.put(username, new UserConnected(username, password, "offline"));
         }
 
         // output degl'utenti caricati dal file

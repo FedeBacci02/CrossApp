@@ -1,32 +1,31 @@
-import java.net.*;
+package Client;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 import org.fusesource.jansi.Ansi;
-
-import java.io.*;
 
 import com.google.gson.Gson;
 
 import Utenti.User;
+import Server.AutResponse;
 
-public class Login implements ComandoStrategy {
+
+public class Logout implements ComandoStrategy {
 
     private User utenteCorrente;
 
+    @Override
     public void esegui(String[] parameters, Socket socket) {
-        // System.out.println("Login's command is executed ..");
-
-        if (parameters.length != 3) {
-            System.out.println("Errore: Mancano Username/Password");
-            return;
-        }
+        // System.out.println("Logout's command is executed ..");
 
         Gson gson = new Gson();
-        User utente = new User(parameters[1], parameters[2]);
-        Request r = new Request("login", utente);
+        Request r = new Request("logout", new Object());
         String message = gson.toJson(r);
 
         try {
-
             // inizializzazione delle variabili di stream
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -41,14 +40,11 @@ public class Login implements ComandoStrategy {
 
             // output al client
             AutResponse response = AutResponse.desMessage(jsonResponse);
-            if(response.getCode() == 100)
-                utenteCorrente = utente;
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public User getUserCorrente() {

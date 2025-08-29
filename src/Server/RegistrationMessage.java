@@ -1,3 +1,4 @@
+package Server;
 import com.google.gson.*;
 
 public class RegistrationMessage {

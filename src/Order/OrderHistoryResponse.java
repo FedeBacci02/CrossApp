@@ -3,13 +3,15 @@ package Order;
 import com.google.gson.Gson;
 
 public class OrderHistoryResponse {
-    OrdineEvaso oApertura, oChiusura, oMax, oMin;
+    private int code ;
+    private OrdineEvaso oApertura, oChiusura, oMax, oMin;
 
-    public OrderHistoryResponse(OrdineEvaso oApertura, OrdineEvaso oChiusura, OrdineEvaso oMax, OrdineEvaso oMin) {
+    public OrderHistoryResponse(OrdineEvaso oApertura, OrdineEvaso oChiusura, OrdineEvaso oMax, OrdineEvaso oMin,int code) {
         this.oApertura = oApertura;
         this.oChiusura = oChiusura;
         this.oMax = oMax;
         this.oMin = oMin;
+        this.code = code;
     }
 
     public OrdineEvaso getoApertura() {
@@ -54,6 +56,18 @@ public class OrderHistoryResponse {
         Gson gson = new Gson();
         OrderHistoryResponse message = gson.fromJson(jsonMessage, OrderHistoryResponse.class);
         return message;
+    }
+
+
+
+    public int getCode() {
+        return code;
+    }
+
+
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
 }

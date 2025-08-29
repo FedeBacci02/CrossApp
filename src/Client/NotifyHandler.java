@@ -1,8 +1,12 @@
+package Client;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
 
 import com.google.gson.Gson;
+
+import Server.RegistrationMessage;
 
 public class NotifyHandler implements Runnable {
 

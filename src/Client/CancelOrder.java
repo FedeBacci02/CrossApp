@@ -1,31 +1,38 @@
-import java.io.*;
-import java.net.*;
+package Client;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 import org.fusesource.jansi.Ansi;
 
 import com.google.gson.Gson;
 
-import Utenti.NewUser;
+import Order.*;
 import Utenti.User;
 
-public class updateCredentials implements ComandoStrategy {
+import Server.AutResponse;
 
-    private User utenteCorrente;
+public class CancelOrder implements ComandoStrategy{
 
+    @Override
     public void esegui(String[] parameters, Socket socket) {
-        // System.out.println("Logout's command is executed ..");
+        // System.out.println("Login's command is executed ..");
 
-        if (parameters.length < 3) {
-            System.out.println("Mancano Username/Password/VecchiaPassword");
+        if (parameters.length != 2) {
+            System.out.println("Manca l'order id");
             return;
         }
 
+        System.out.println(parameters[1]);
+
         Gson gson = new Gson();
-        Request r = new Request("updateCredentials",
-                new NewUser(parameters[2], parameters[1], parameters[3], "offline"));
+        Request r = new Request("cancelorder",new CancelOrderRequest(Integer.parseInt(parameters[1])));
         String message = gson.toJson(r);
 
-        try {
+              try {
+
             // inizializzazione delle variabili di stream
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,14 +47,22 @@ public class updateCredentials implements ComandoStrategy {
 
             // output al client
             AutResponse response = AutResponse.desMessage(jsonResponse);
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response).reset());
+
+            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+
+        
     }
 
+    @Override
     public User getUserCorrente() {
-        return utenteCorrente;
+     
+        return null;
     }
+
 }

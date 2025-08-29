@@ -2,23 +2,27 @@
   "users": [
     {
       "username": "Fede02",
-      "password": "1234",
-      "status": "offline"
+      "password": "1234"
     },
     {
       "username": "Poveros03",
-      "password": "5678",
-      "status": "online"
+      "password": "5678"
     },
     {
       "username": "PoveroCiccio03",
-      "password": "12345",
-      "status": "offline"
+      "password": "12345"
+    },
+    {
+      "username": "Alessandro9919",
+      "password": "Federico007!"
+    },
+    {
+      "username": "alice",
+      "password": "000"
     },
     {
       "username": "Dotto00",
-      "password": "1234",
-      "status": "offline"
+      "password": "1234"
     }
   ]
 }

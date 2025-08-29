@@ -1,3 +1,4 @@
+package Server;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -46,7 +47,6 @@ public class SalvataggioDati implements Runnable {
                         writer.beginObject();
                         writer.name("username").value(entry.getValue().getUsername());
                         writer.name("password").value(entry.getValue().getPassword());
-                        writer.name("status").value(entry.getValue().getStatus());
                         writer.endObject();
                     }
                     writer.endArray();

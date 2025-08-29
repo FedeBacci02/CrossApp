@@ -1,3 +1,5 @@
+package Client;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -7,27 +9,29 @@ import org.fusesource.jansi.Ansi;
 
 import com.google.gson.Gson;
 
-import Order.*;
+import Order.GetPriceHistoryRequest;
+import Order.OrderHistoryResponse;
 import Utenti.User;
 
-public class CancelOrder implements ComandoStrategy{
+public class GetHistoryPrice implements ComandoStrategy {
 
     @Override
     public void esegui(String[] parameters, Socket socket) {
-        // System.out.println("Login's command is executed ..");
-
-        if (parameters.length != 2) {
-            System.out.println("Manca l'order id");
+        if (parameters.length < 2) {
+            System.out.println("Sintassi errata> getPriceHistory mese (MMYYYY)");
             return;
         }
 
-        System.out.println(parameters[1]);
+        if (!GetPriceHistoryRequest.isMonth(parameters[1])) {
+            System.out.println("Sintassi mese errata> getPriceHistory mese (MMYYYY)");
+            return;
+        }
 
         Gson gson = new Gson();
-        Request r = new Request("cancelorder",new CancelOrderRequest(Integer.parseInt(parameters[1])));
+        Request r = new Request("getpricehistory", new GetPriceHistoryRequest(parameters[1]));
         String message = gson.toJson(r);
 
-              try {
+        try {
 
             // inizializzazione delle variabili di stream
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -42,22 +46,23 @@ public class CancelOrder implements ComandoStrategy{
             String jsonResponse = in.readLine();
 
             // output al client
-            AutResponse response = AutResponse.desMessage(jsonResponse);
+            OrderHistoryResponse response = OrderHistoryResponse.desMessage(jsonResponse);
+            if(response.getCode()==100){
+                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
+            }else{
+                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("Il mese inserito non ha dati storici").reset());
+            }
 
-            System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
-        
     }
 
     @Override
     public User getUserCorrente() {
-     
+
         return null;
     }
 
