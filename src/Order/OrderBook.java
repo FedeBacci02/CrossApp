@@ -72,6 +72,9 @@ public class OrderBook {
             System.out.println(Ansi.ansi().fg(Ansi.Color.WHITE).a(String.format("%-10d", total)).reset());
         }
 
+        System.out.println(bidBook.toString());
+        System.out.println(askBook.toString());
+
     }
 
     public synchronized void visualizzaStopOrders() {
@@ -89,11 +92,11 @@ public class OrderBook {
         return sommaSize;
     }
 
-    //funzione di back up dell'order book per il market order
+    // funzione di back up dell'order book per il market order
     private OrderBook backUpCreate() {
 
-        //System.out.println("STAMPA DA backUpCreate()");
-        //this.visualizzaOrderBook(); 
+        // System.out.println("STAMPA DA backUpCreate()");
+        // this.visualizzaOrderBook();
 
         OrderBook oldBook = new OrderBook();
         oldBook.askBook.clear();
@@ -240,7 +243,7 @@ public class OrderBook {
                             size = size - ordine.getSize();
                             System.out.println("[+] OK2");
                             daNotificare.add(ordine);
-                            entry.getValue().remove();
+                            iterator.remove();
                         } else {
                             // size < 0
                             System.out.println("[+] OK1");
@@ -256,12 +259,6 @@ public class OrderBook {
                         daRimuovere.add(entry.getKey());
                 }
 
-                // rimozione chiavi
-                Iterator<Integer> iterator = daRimuovere.iterator();
-                while (iterator.hasNext()) {
-                    this.bidBook.remove(iterator.next());
-                }
-
                 if (size != 0) {
                     // resettiamo l'order book come era in partenza
                     backupBook.visualizzaOrderBook();
@@ -275,11 +272,18 @@ public class OrderBook {
                 } else {
                     // ordine soddisfatto
                     System.out.println("[+] OK");
-
+                    
+                    //invia notifica a chi ha inviato il market order
                     OrdineEvaso ordineEvaso = order.evadiOrdine();
                     oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
                     notifica.inviaOrdine(order.getUtente());
+
+                    // rimozione chiavi
+                    Iterator<Integer> iterator = daRimuovere.iterator();
+                    while (iterator.hasNext()) {
+                        this.bidBook.remove(iterator.next());
+                    }
 
                     // notifichiamo i limitorder evasi
                     Iterator<EvaluatingOrder> iterator3 = daNotificare.iterator();
@@ -305,10 +309,8 @@ public class OrderBook {
                         if (size - ordine.getSize() >= 0) {
                             size = size - ordine.getSize();
                             System.out.println("[+] OK2");
-
                             daNotificare.add(ordine);
-
-                            entry.getValue().remove();
+                            iterator2.remove();
                         } else {
                             // size < 0
                             System.out.println("[+] OK1");

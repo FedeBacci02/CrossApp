@@ -27,6 +27,7 @@ public class EvaluatingOrder extends Order {
         super(other); // chiama il costruttore di copia di Order
         this.orderId = other.orderId;
         this.username = other.username;
+        this.orderType = other.orderType;
         this.utente = other.utente;
     }
 
@@ -83,7 +84,8 @@ public class EvaluatingOrder extends Order {
 
         // settiamo l'order type con il formato giusto
         String newOrderType;
-        System.out.println(orderType);
+        System.out.println(this.orderType);
+        System.out.println(this.toString());
         switch (orderType) {
             case "insertmarketorder":
                 newOrderType = "market";

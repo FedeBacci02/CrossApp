@@ -2,11 +2,15 @@
   "users": [
     {
       "username": "Fede02",
-      "password": "1234"
+      "password": "5678"
     },
     {
       "username": "Poveros03",
       "password": "5678"
+    },
+    {
+      "username": "Cino02",
+      "password": "1234"
     },
     {
       "username": "PoveroCiccio03",
