@@ -5,13 +5,15 @@ import com.google.gson.Gson;
 public class OrderHistoryResponse {
     private int code ;
     private OrdineEvaso oApertura, oChiusura, oMax, oMin;
+    private String message;
 
-    public OrderHistoryResponse(OrdineEvaso oApertura, OrdineEvaso oChiusura, OrdineEvaso oMax, OrdineEvaso oMin,int code) {
+    public OrderHistoryResponse(OrdineEvaso oApertura, OrdineEvaso oChiusura, OrdineEvaso oMax, OrdineEvaso oMin,int code, String message) {
         this.oApertura = oApertura;
         this.oChiusura = oChiusura;
         this.oMax = oMax;
         this.oMin = oMin;
         this.code = code;
+        this.message = message;
     }
 
     public OrdineEvaso getoApertura() {
@@ -68,6 +70,18 @@ public class OrderHistoryResponse {
 
     public void setCode(int code) {
         this.code = code;
+    }
+
+
+
+    public String getMessage() {
+        return message;
+    }
+
+
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }

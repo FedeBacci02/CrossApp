@@ -122,6 +122,7 @@ public class OrderBook {
 
     }
 
+    // Fa il match degli stop orders
     public synchronized void stopOrderMatch(OrderHistory oHistory) {
 
         Iterator<EvaluatingOrder> iterator = stopOrders.iterator();
@@ -150,6 +151,7 @@ public class OrderBook {
         }
     }
 
+    // algoritmo di matching dei limit orders
     public synchronized void matchLimitOrders(OrderHistory oHistory) {
         // Finché ci sono bid e ask da matchare
         while (!bidBook.isEmpty() && !askBook.isEmpty()) {
@@ -173,6 +175,9 @@ public class OrderBook {
                 // Esegui il trade
                 System.out.printf("Trade executed: Size=%d at Price=%d%n", tradedSize, tradePrice);
 
+                OrdineEvaso ordineBidEvaso = bidOrder.evadiOrdine();
+                OrdineEvaso ordineAskEvaso = askOrder.evadiOrdine();
+
                 // Aggiorna le quantità residue
                 bidOrder.setSize(bidSize - tradedSize);
                 askOrder.setSize(askSize - tradedSize);
@@ -183,9 +188,8 @@ public class OrderBook {
                             "[+]" + bidOrder.getOrderId() + " di " + bidOrder.getUsername() + " è stato completato");
 
                     // invio della notifica all'utente interessato
-                    OrdineEvaso ordineEvaso = bidOrder.evadiOrdine();
-                    oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
-                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+                    oHistory.getOrdiniEvasi().put(ordineBidEvaso.getOrderId(), ordineBidEvaso);
+                    NotificaOrdine notifica = new NotificaOrdine(ordineBidEvaso);
                     notifica.inviaOrdine(bidOrder.getUtente());
 
                     bidQueue.poll();
@@ -194,11 +198,16 @@ public class OrderBook {
                     }
                 }
                 if (askOrder.getSize() == 0) {
-                    System.out.println(
-                            "[+]" + askOrder.getOrderId() + " di " + askOrder.getUsername() + " è stato completato");
-                    OrdineEvaso ordineEvaso = askOrder.evadiOrdine();
-                    oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
-                    NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
+
+                    // output nel server
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(
+                            "[+]" + askOrder.getOrderId() + " di " + askOrder.getUsername() + " è stato completato"));
+
+                    // aggiungi alla struttura dati degl'ordini evasi
+                    oHistory.getOrdiniEvasi().put(ordineAskEvaso.getOrderId(), ordineAskEvaso);
+
+                    // invia notifica
+                    NotificaOrdine notifica = new NotificaOrdine(ordineAskEvaso);
                     notifica.inviaOrdine(askOrder.getUtente());
 
                     askQueue.poll();
@@ -214,23 +223,34 @@ public class OrderBook {
         }
     }
 
+    // esegue il market order
     public synchronized int eseguiMarketOrder(EvaluatingOrder order, OrderHistory oHistory) {
 
-        System.out.println("==== ORDER BOOK ORIGINALE ====");
-        this.visualizzaOrderBook(); // Stampa PRIMA di fare backup
+        /*
+         * System.out.println("ORDER BOOK ORIGINALE");
+         * this.visualizzaOrderBook();
+         */
 
-        OrderBook backupBook = this.backUpCreate(); // Copia lo stato attuale
+        // crea la copia per il back up
+        OrderBook backupBook = this.backUpCreate();
 
-        System.out.println("==== BACKUP BOOK ====");
-        backupBook.visualizzaOrderBook(); // Stampa backup
+        /*
+         * System.out.println("BACK UP BOOK");
+         * backupBook.visualizzaOrderBook();
+         */
 
+        // insieme delle chiavi (prize) da rimuovere
         List<Integer> daRimuovere = new ArrayList<>();
+
+        // insieme degl'ordini da notificare
         LinkedList<EvaluatingOrder> daNotificare = new LinkedList<>();
 
+        // size dell market order da azzerare
         int size = order.getSize();
+
         switch (order.getType()) {
             case ASK:
-                System.out.println("[+] esegue ASK");
+                //System.out.println("[+] esegue ASK");
                 for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : this.getBidBook().entrySet()) {
 
                     Iterator<EvaluatingOrder> iterator = entry.getValue().iterator();
@@ -241,12 +261,12 @@ public class OrderBook {
                         System.out.println(size);
                         if (size - ordine.getSize() >= 0) {
                             size = size - ordine.getSize();
-                            System.out.println("[+] OK2");
+                            //System.out.println("[+] OK2");
                             daNotificare.add(ordine);
                             iterator.remove();
                         } else {
                             // size < 0
-                            System.out.println("[+] OK1");
+                            //System.out.println("[+] OK1");
                             int newSize = ordine.getSize() - size;
                             ordine.setSize(newSize);
                             size = 0;
@@ -261,19 +281,22 @@ public class OrderBook {
 
                 if (size != 0) {
                     // resettiamo l'order book come era in partenza
-                    backupBook.visualizzaOrderBook();
+                    //backupBook.visualizzaOrderBook();
+
+                    //esegue il backup dell orderbook
                     this.getBidBook().clear();
                     this.getBidBook().putAll(backupBook.getBidBook());
-                    // fine alg
-                    System.out.println("[+] NO OK");
-                    this.visualizzaOrderBook();
 
-                    return -1; // non può essere evaso
+                    // fine alg
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.RED).a("[+] Market order ha fallito"));
+                    //this.visualizzaOrderBook();
+
+                    return -1; //ritorna codice di errore - non può essere evaso
                 } else {
                     // ordine soddisfatto
-                    System.out.println("[+] OK");
-                    
-                    //invia notifica a chi ha inviato il market order
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] Market order eseguito con successo"));
+
+                    // invia notifica a chi ha inviato il market order
                     OrdineEvaso ordineEvaso = order.evadiOrdine();
                     oHistory.getOrdiniEvasi().put(ordineEvaso.getOrderId(), ordineEvaso);
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);
@@ -288,8 +311,14 @@ public class OrderBook {
                     // notifichiamo i limitorder evasi
                     Iterator<EvaluatingOrder> iterator3 = daNotificare.iterator();
                     while (iterator3.hasNext()) {
+                        //estrae l'ordine e lo si trasforma nell'ordine evaso
                         EvaluatingOrder order2 = iterator3.next();
                         OrdineEvaso ordineEvaso2 = order2.evadiOrdine();
+
+                        // aggiungi alla struttura dati degl'ordini evasi
+                        oHistory.getOrdiniEvasi().put(ordineEvaso2.getOrderId(), ordineEvaso2);
+                        
+                        // invia la notifica
                         NotificaOrdine notifica2 = new NotificaOrdine(ordineEvaso2);
                         notifica2.inviaOrdine(order2.getUtente());
                     }
@@ -297,7 +326,7 @@ public class OrderBook {
                     return 1;
                 }
             case BID:
-                System.out.println("[+] esegue BID");
+                //System.out.println("[+] esegue BID");
                 for (Map.Entry<Integer, LinkedList<EvaluatingOrder>> entry : this.getAskBook().entrySet()) {
 
                     Iterator<EvaluatingOrder> iterator2 = entry.getValue().iterator();
@@ -305,15 +334,15 @@ public class OrderBook {
                     while (iterator2.hasNext() && size != 0) {
                         EvaluatingOrder ordine = iterator2.next();
 
-                        System.out.println(size);
+                        //System.out.println(size);
                         if (size - ordine.getSize() >= 0) {
                             size = size - ordine.getSize();
-                            System.out.println("[+] OK2");
+                            //System.out.println("[+] OK2");
                             daNotificare.add(ordine);
                             iterator2.remove();
                         } else {
                             // size < 0
-                            System.out.println("[+] OK1");
+                            //System.out.println("[+] OK1");
                             int newSize = ordine.getSize() - size;
                             ordine.setSize(newSize);
                             size = 0;
@@ -343,7 +372,7 @@ public class OrderBook {
                     return -1; // non può essere evaso
                 } else {
                     // ordine soddisfatto
-                    System.out.println("[+] OK");
+                    System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("[+] Market order eseguito con successo"));
 
                     OrdineEvaso ordineEvaso = order.evadiOrdine();
                     NotificaOrdine notifica = new NotificaOrdine(ordineEvaso);

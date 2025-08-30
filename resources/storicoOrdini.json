@@ -1,30 +1,6 @@
 {
   "trades": [
     {
-      "orderId": 65537,
-      "type": "bid",
-      "orderType": "insertlimitorder",
-      "size": 0,
-      "price": 100,
-      "timestamp": 1756400517
-    },
-    {
-      "orderId": 65536,
-      "type": "ask",
-      "orderType": "insertlimitorder",
-      "size": 0,
-      "price": 100,
-      "timestamp": 1756400517
-    },
-    {
-      "orderId": 65539,
-      "type": "bid",
-      "orderType": "insertmarketorder",
-      "size": 50,
-      "price": 1,
-      "timestamp": 1756400617
-    },
-    {
       "orderId": 3,
       "type": "bid",
       "orderType": "market",
@@ -41,28 +17,12 @@
       "timestamp": 1725149231
     },
     {
-      "orderId": 65541,
-      "type": "bid",
-      "orderType": "insertmarketorder",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756397848
-    },
-    {
       "orderId": 5,
       "type": "ask",
       "orderType": "market",
       "size": 1927,
       "price": 60000000,
       "timestamp": 1725149331
-    },
-    {
-      "orderId": 65540,
-      "type": "bid",
-      "orderType": "insertmarketorder",
-      "size": 50,
-      "price": 1,
-      "timestamp": 1756400626
     },
     {
       "orderId": 6,
@@ -7217,14 +7177,6 @@
       "timestamp": 1725222085
     },
     {
-      "orderId": 66734,
-      "type": "ask",
-      "orderType": "market",
-      "size": 332,
-      "price": 1261341858,
-      "timestamp": 1729396676
-    },
-    {
       "orderId": 1199,
       "type": "bid",
       "orderType": "market",
@@ -7233,12 +7185,12 @@
       "timestamp": 1725222122
     },
     {
-      "orderId": 66737,
+      "orderId": 66734,
       "type": "ask",
       "orderType": "market",
-      "size": 572,
-      "price": 1261525051,
-      "timestamp": 1729396920
+      "size": 332,
+      "price": 1261341858,
+      "timestamp": 1729396676
     },
     {
       "orderId": 1200,
@@ -7247,6 +7199,14 @@
       "size": 1086,
       "price": 80499371,
       "timestamp": 1725222168
+    },
+    {
+      "orderId": 66737,
+      "type": "ask",
+      "orderType": "market",
+      "size": 572,
+      "price": 1261525051,
+      "timestamp": 1729396920
     },
     {
       "orderId": 1204,
@@ -22257,20 +22217,20 @@
       "timestamp": 1729584379
     },
     {
-      "orderId": 69705,
-      "type": "ask",
-      "orderType": "market",
-      "size": 780,
-      "price": 1313440931,
-      "timestamp": 1729584565
-    },
-    {
       "orderId": 4168,
       "type": "bid",
       "orderType": "market",
       "size": 831,
       "price": 134460978,
       "timestamp": 1725413778
+    },
+    {
+      "orderId": 69705,
+      "type": "ask",
+      "orderType": "market",
+      "size": 780,
+      "price": 1313440931,
+      "timestamp": 1729584565
     },
     {
       "orderId": 69707,
@@ -22289,20 +22249,20 @@
       "timestamp": 1725413847
     },
     {
-      "orderId": 69709,
-      "type": "ask",
-      "orderType": "market",
-      "size": 37,
-      "price": 1313495654,
-      "timestamp": 1729584922
-    },
-    {
       "orderId": 4172,
       "type": "bid",
       "orderType": "market",
       "size": 250,
       "price": 134460978,
       "timestamp": 1725413875
+    },
+    {
+      "orderId": 69709,
+      "type": "ask",
+      "orderType": "market",
+      "size": 37,
+      "price": 1313495654,
+      "timestamp": 1729584922
     },
     {
       "orderId": 69708,
@@ -90177,60 +90137,12 @@
       "timestamp": 1730418574
     },
     {
-      "orderId": 82911,
-      "type": "ask",
-      "orderType": "limit",
-      "size": 0,
-      "price": 57900000,
-      "timestamp": 1756406857
-    },
-    {
-      "orderId": 82910,
-      "type": "ask",
-      "orderType": "limit",
-      "size": 0,
-      "price": 57900000,
-      "timestamp": 1756406719
-    },
-    {
-      "orderId": 82913,
-      "type": "ask",
-      "orderType": "limit",
-      "size": 0,
-      "price": 57900000,
-      "timestamp": 1756407407
-    },
-    {
       "orderId": 17377,
       "type": "bid",
       "orderType": "market",
       "size": 117,
       "price": 371682018,
       "timestamp": 1726252038
-    },
-    {
-      "orderId": 82912,
-      "type": "ask",
-      "orderType": "limit",
-      "size": 0,
-      "price": 57900000,
-      "timestamp": 1756407334
-    },
-    {
-      "orderId": 82915,
-      "type": "ask",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756407478
-    },
-    {
-      "orderId": 82919,
-      "type": "ask",
-      "orderType": "stop",
-      "size": 1000,
-      "price": 57000000,
-      "timestamp": 1756407830
     },
     {
       "orderId": 17383,
@@ -90241,36 +90153,12 @@
       "timestamp": 1726252382
     },
     {
-      "orderId": 82921,
-      "type": "bid",
-      "orderType": "stop",
-      "size": 1000,
-      "price": 58000000,
-      "timestamp": 1756408200
-    },
-    {
       "orderId": 17385,
       "type": "ask",
       "orderType": "market",
       "size": 125,
       "price": 371684266,
       "timestamp": 1726252537
-    },
-    {
-      "orderId": 82925,
-      "type": "bid",
-      "orderType": "market",
-      "size": 50,
-      "price": 1,
-      "timestamp": 1756485480
-    },
-    {
-      "orderId": 82924,
-      "type": "bid",
-      "orderType": "limit",
-      "size": 0,
-      "price": 150,
-      "timestamp": 1756485458
     },
     {
       "orderId": 17390,
@@ -90281,36 +90169,12 @@
       "timestamp": 1726252857
     },
     {
-      "orderId": 82928,
-      "type": "bid",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756485599
-    },
-    {
       "orderId": 17396,
       "type": "bid",
       "orderType": "market",
       "size": 108,
       "price": 371819259,
       "timestamp": 1726253096
-    },
-    {
-      "orderId": 82933,
-      "type": "bid",
-      "orderType": "market",
-      "size": 20,
-      "price": 1,
-      "timestamp": 1756486712
-    },
-    {
-      "orderId": 82935,
-      "type": "bid",
-      "orderType": "market",
-      "size": 50,
-      "price": 1,
-      "timestamp": 1756486770
     },
     {
       "orderId": 17400,
@@ -90321,14 +90185,6 @@
       "timestamp": 1726253367
     },
     {
-      "orderId": 82937,
-      "type": "bid",
-      "orderType": "market",
-      "size": 30,
-      "price": 1,
-      "timestamp": 1756486809
-    },
-    {
       "orderId": 17404,
       "type": "bid",
       "orderType": "market",
@@ -90337,36 +90193,12 @@
       "timestamp": 1726253738
     },
     {
-      "orderId": 82941,
-      "type": "bid",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756487815
-    },
-    {
-      "orderId": 82940,
-      "type": "bid",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756487802
-    },
-    {
       "orderId": 17406,
       "type": "bid",
       "orderType": "market",
       "size": 1386,
       "price": 371839125,
       "timestamp": 1726253814
-    },
-    {
-      "orderId": 82945,
-      "type": "bid",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756487884
     },
     {
       "orderId": 17408,
@@ -90383,14 +90215,6 @@
       "size": 978,
       "price": 371940793,
       "timestamp": 1726254094
-    },
-    {
-      "orderId": 82949,
-      "type": "bid",
-      "orderType": "market",
-      "size": 100,
-      "price": 1,
-      "timestamp": 1756488347
     },
     {
       "orderId": 17415,

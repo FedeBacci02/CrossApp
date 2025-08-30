@@ -30,7 +30,7 @@ public class OrderHistory {
     // ritorna l'ultimo elemento in lista
     public OrdineEvaso getLast() {
 
-        // Creiamo una copia 
+        // Creiamo una copia
         Map<Integer, OrdineEvaso> copiaOrdiniEvasi = new HashMap<>(ordiniEvasi);
 
         if (copiaOrdiniEvasi.isEmpty()) {
@@ -81,8 +81,15 @@ public class OrderHistory {
         }
     }
 
+    // funzione che carica il file esterno nella struttura dati
     public void loadOrdersFromFile(String jsonFileName) {
         File jfile = new File(jsonFileName);
+
+        if (!jfile.exists() || !jfile.isFile() || jfile.length() == 0) {
+            System.out.println("[+] File non valido o vuoto -> struttura dati vuota");
+            return;
+        }
+
         try {
             JsonElement fileElement = JsonParser.parseReader(new FileReader(jfile));
             JsonObject fileObject = fileElement.getAsJsonObject();
@@ -115,12 +122,10 @@ public class OrderHistory {
                 OrdineEvaso trade = new OrdineEvaso(orderId, otype, orderType, size, price, timestampInt);
                 ordiniEvasi.put(trade.getOrderId(), trade);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            System.out.println("CARICAMENTO DI " + jsonFileName + " COMPLETATO.");
+            System.out.println("[+] CARICAMENTO DI " + jsonFileName + " COMPLETATO.");
         }
     }
 
@@ -132,7 +137,7 @@ public class OrderHistory {
 
     public OrderHistoryResponse filtraPerMese(String stringa) {
 
-        //creiamo una
+        // creiamo una
         Map<Integer, OrdineEvaso> copiaOrdiniEvasi = new HashMap<>(ordiniEvasi);
 
         // parser dell'input
@@ -162,10 +167,10 @@ public class OrderHistory {
         // ritorna l'oggetto OrderHistoryResponse per la risposta all utente
         try {
             return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst(), ordiniEvasiFiltrati.getLast(),
-                    OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati), 100);
+                    OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati), 100,"");
         } catch (NoSuchElementException ex) {
             System.out.println("[+] Elementi non presenti per il periodo richiesto");
-            return new OrderHistoryResponse(null, null, null, null, 101);
+            return new OrderHistoryResponse(null, null, null, null, 101,"Errore mese non presente");
         }
 
     }

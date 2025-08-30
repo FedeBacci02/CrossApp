@@ -217,11 +217,13 @@ public class CrossServer implements Runnable {
                     }
                 }
 
+                // risponde al messaggio di tipo insertmarketorder, insertlimitorder e
+                // insertstoporder
                 if (r.getOperation().equals("insertmarketorder") || r.getOperation().equals("insertlimitorder")
                         || r.getOperation().equals("insertstoporder")) {
                     int code = 0;
                     if (utente == null) {
-                        // risposta
+                        // utente non connesso risposta con messaggio di errore -1
                         OrdResponse risposta = new OrdResponse(-1);
                         String jsonResponse = gson.toJson(risposta);
                         out.println(jsonResponse);
@@ -245,18 +247,22 @@ public class CrossServer implements Runnable {
                         code = orderContext.elaboraOrdine();
 
                         // risposta al client
+                        String jsonResponse;
+                        
+                        // risponde o con -1 se l'ordine non è andato a buon fine o con orderId
+                        // corrispondente
                         if (code == -1) {
                             OrdResponse risposta = new OrdResponse(code);
-                            String jsonResponse = gson.toJson(risposta);
-                            out.println(jsonResponse);
+                            jsonResponse = gson.toJson(risposta);
                         } else {
                             OrdResponse risposta = new OrdResponse(ordine.getOrderId());
-                            String jsonResponse = gson.toJson(risposta);
-                            out.println(jsonResponse);
+                            jsonResponse = gson.toJson(risposta);
                         }
+                        out.println(jsonResponse);
                     }
                 }
 
+                // risponde al messaggio di tipo cancelorder
                 if (r.getOperation().equals("cancelorder")) {
 
                     AutResponse risposta;
@@ -288,6 +294,7 @@ public class CrossServer implements Runnable {
                     out.println(jsonResponse);
                 }
 
+                // risponde al messaggio di tipo getpricehistory
                 if (r.getOperation().equals("getpricehistory")) {
                     String values = gson.toJson(r.getValues());
                     GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);

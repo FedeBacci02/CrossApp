@@ -50,7 +50,7 @@ public class GetHistoryPrice implements ComandoStrategy {
             if(response.getCode()==100){
                 System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a(response.toString()).reset());
             }else{
-                System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN).a("Il mese inserito non ha dati storici").reset());
+                System.out.println(Ansi.ansi().fg(Ansi.Color.RED).a(response.getMessage()).reset());
             }
 
 
