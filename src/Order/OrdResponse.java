@@ -2,6 +2,9 @@ package Order;
 
 import com.google.gson.*;
 
+//risposta di tipo ordine e serve per inviare al client o -1 in caso di errore o
+//l' id dell'ordine in caso di conferma dell'ordine 
+
 public class OrdResponse {
 
     private int orderId;

@@ -1,4 +1,4 @@
-package exceptions;
+package Exceptions;
 
 public class InvalidatePriceSizeException extends Exception { 
     public InvalidatePriceSizeException (String s){

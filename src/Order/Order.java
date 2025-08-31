@@ -1,6 +1,6 @@
 package Order;
 
-import exceptions.InvalidatePriceSizeException;
+import Exceptions.InvalidatePriceSizeException;
 
 public class Order {
     private OType type;

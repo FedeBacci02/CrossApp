@@ -7,13 +7,13 @@ import org.fusesource.jansi.Ansi;
 public class OrderBook {
 
     // struttura dati usata per il lato ask
-    TreeMap<Integer, LinkedList<EvaluatingOrder>> askBook; // Chiave: "price" Values: "Order"
+    private TreeMap<Integer, LinkedList<EvaluatingOrder>> askBook; // Chiave: "price" Values: "Order"
 
     // struttura dati usata per il lato bid
-    TreeMap<Integer, LinkedList<EvaluatingOrder>> bidBook; // Chiave: "price" Values: "Order"
+    private TreeMap<Integer, LinkedList<EvaluatingOrder>> bidBook; // Chiave: "price" Values: "Order"
 
     // struttura dati utilizzata per la gestione degli stop orders
-    List<EvaluatingOrder> stopOrders;
+    private List<EvaluatingOrder> stopOrders;
 
     public OrderBook() {
 

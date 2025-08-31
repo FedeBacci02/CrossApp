@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import Utenti.*;
 
+//classe dell'ordine da valutare
+
 public class EvaluatingOrder extends Order {
 
     private int orderId;

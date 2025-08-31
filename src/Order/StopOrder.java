@@ -1,5 +1,7 @@
 package Order;
 
+//strategia dello stopOrder
+
 public class StopOrder implements OrderStrategy {
     @Override
     public int esegui(EvaluatingOrder order, OrderBook orderBook, OrderHistory oHistory) {

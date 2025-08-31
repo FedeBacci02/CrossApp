@@ -12,7 +12,7 @@ import Utenti.User;
 import Server.AutResponse;
 
 
-public class updateCredentials implements ComandoStrategy {
+public class UpdateCredentials implements ComandoStrategy {
 
     private User utenteCorrente;
 

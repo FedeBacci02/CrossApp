@@ -13,7 +13,7 @@ import Properties.Prop;
 
 public class ClientMain {
     public static void main(String[] args) throws IOException {
-
+        
         // config del Client
         Prop config = new Prop("resources/client.properties");
 

@@ -166,11 +166,11 @@ public class OrderHistory {
 
         // ritorna l'oggetto OrderHistoryResponse per la risposta all utente
         try {
-            return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst(), ordiniEvasiFiltrati.getLast(),
-                    OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati), 100,"");
+            return new OrderHistoryResponse(ordiniEvasiFiltrati.getFirst().getPrice(), ordiniEvasiFiltrati.getLast().getPrice(),
+                    OrderHistory.trovaMaxOrd(ordiniEvasiFiltrati).getPrice(), OrderHistory.trovaMinOrd(ordiniEvasiFiltrati).getPrice(), 100,"");
         } catch (NoSuchElementException ex) {
             System.out.println("[+] Elementi non presenti per il periodo richiesto");
-            return new OrderHistoryResponse(null, null, null, null, 101,"Errore mese non presente");
+            return new OrderHistoryResponse(-1, -1, -1, -1, 101,"Errore mese non presente");
         }
 
     }

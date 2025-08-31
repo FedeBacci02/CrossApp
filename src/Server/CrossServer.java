@@ -248,7 +248,7 @@ public class CrossServer implements Runnable {
 
                         // risposta al client
                         String jsonResponse;
-                        
+
                         // risponde o con -1 se l'ordine non è andato a buon fine o con orderId
                         // corrispondente
                         if (code == -1) {
@@ -269,7 +269,7 @@ public class CrossServer implements Runnable {
                     System.out.println(Ansi.ansi().fg(Ansi.Color.GREEN)
                             .a("[+] " + utente + " tenta di cancellare un ordine ").reset());
                     if (utente == null) {
-                        // risposta
+                        // utente non loggato
                         risposta = new AutResponse(102,
                                 "utente non loggato");
                     } else {
@@ -296,9 +296,15 @@ public class CrossServer implements Runnable {
 
                 // risponde al messaggio di tipo getpricehistory
                 if (r.getOperation().equals("getpricehistory")) {
+
+                    // traduciamo il campo values
                     String values = gson.toJson(r.getValues());
                     GetPriceHistoryRequest request = gson.fromJson(values, GetPriceHistoryRequest.class);
+
+                    // filtra per mese inserito
                     OrderHistoryResponse risposta = oHistory.filtraPerMese(request.getMonth());
+
+                    // invia al client la risposta
                     String jsonResponse = gson.toJson(risposta);
                     out.println(jsonResponse);
                 }

@@ -2,12 +2,14 @@ package Order;
 
 import com.google.gson.Gson;
 
+//risposta di tipo order history
+
 public class OrderHistoryResponse {
     private int code ;
-    private OrdineEvaso oApertura, oChiusura, oMax, oMin;
+    private int oApertura, oChiusura, oMax, oMin;
     private String message;
 
-    public OrderHistoryResponse(OrdineEvaso oApertura, OrdineEvaso oChiusura, OrdineEvaso oMax, OrdineEvaso oMin,int code, String message) {
+    public OrderHistoryResponse(int oApertura, int oChiusura, int oMax, int oMin,int code, String message) {
         this.oApertura = oApertura;
         this.oChiusura = oChiusura;
         this.oMax = oMax;
@@ -16,35 +18,35 @@ public class OrderHistoryResponse {
         this.message = message;
     }
 
-    public OrdineEvaso getoApertura() {
+    public int getoApertura() {
         return oApertura;
     }
 
-    public void setoApertura(OrdineEvaso oApertura) {
+    public void setoApertura(int oApertura) {
         this.oApertura = oApertura;
     }
 
-    public OrdineEvaso getoChiusura() {
+    public int getoChiusura() {
         return oChiusura;
     }
 
-    public void setoChiusura(OrdineEvaso oChiusura) {
+    public void setoChiusura(int oChiusura) {
         this.oChiusura = oChiusura;
     }
 
-    public OrdineEvaso getoMax() {
+    public int getoMax() {
         return oMax;
     }
 
-    public void setoMax(OrdineEvaso oMax) {
+    public void setoMax(int oMax) {
         this.oMax = oMax;
     }
 
-    public OrdineEvaso getoMin() {
+    public int getoMin() {
         return oMin;
     }
 
-    public void setoMin(OrdineEvaso oMin) {
+    public void setoMin(int oMin) {
         this.oMin = oMin;
     }
 

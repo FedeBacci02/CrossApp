@@ -1,5 +1,8 @@
 package Order;
 
+//sottoclasse di ordine e serve per comporre un ordine evaso nel formato giusto
+//poi da inviare al client tramite notifica
+
 public class OrdineEvaso extends Order {
     private int orderId;
     private String orderType;
