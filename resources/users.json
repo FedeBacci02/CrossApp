@@ -1,32 +1,3 @@
 {
-  "users": [
-    {
-      "username": "Fede02",
-      "password": "5678"
-    },
-    {
-      "username": "Poveros03",
-      "password": "5678"
-    },
-    {
-      "username": "Cino02",
-      "password": "1234"
-    },
-    {
-      "username": "PoveroCiccio03",
-      "password": "12345"
-    },
-    {
-      "username": "Alessandro9919",
-      "password": "Federico007!"
-    },
-    {
-      "username": "alice",
-      "password": "000"
-    },
-    {
-      "username": "Dotto00",
-      "password": "1234"
-    }
-  ]
+  "users": []
 }

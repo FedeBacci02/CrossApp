@@ -52,7 +52,7 @@ public class NotifyHandler implements Runnable {
             }
         } catch (SocketException e) {
             // viene lanciata quando chiudi il socket -> uscita normale
-            System.out.println("NotifyHandler chiuso.");
+            //System.out.println("NotifyHandler chiuso.");
             Thread.currentThread().interrupt();
         } catch (IOException ex) {
             ex.printStackTrace();
